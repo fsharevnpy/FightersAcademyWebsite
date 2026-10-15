@@ -1,4 +1,4 @@
-import { ArrowUpRight, MapPin, MessageCircle, Phone } from "lucide-react";
+import { ArrowUpRight, Facebook, MapPin, MessageCircle, Phone } from "lucide-react";
 import { Brand } from "@/components/ui/brand";
 import { contact } from "@/content/contact";
 
@@ -11,6 +11,7 @@ export function SiteFooter() {
         <h2>Kết nối với STEM Fighters</h2>
         <a href={contact.phoneHref} className="footer-phone"><Phone size={18} aria-hidden="true" /><span>Gọi điện: {contact.phone}</span></a>
         <a href={contact.zaloHref} target="_blank" rel="noopener noreferrer"><MessageCircle size={18} aria-hidden="true" /><span>Chat Zalo</span><ArrowUpRight size={16} aria-hidden="true" /></a>
+        <a href={contact.facebookHref} target="_blank" rel="noopener noreferrer"><Facebook size={18} aria-hidden="true" /><span>Facebook STEM Fighters</span><ArrowUpRight size={16} aria-hidden="true" /></a>
         <a href={contact.mapsHref} target="_blank" rel="noopener noreferrer" className="footer-address"><MapPin size={19} aria-hidden="true" /><span>{contact.addressLines.map(line => <span key={line}>{line}</span>)}</span><ArrowUpRight size={16} aria-hidden="true" /></a>
       </div>
     </div>

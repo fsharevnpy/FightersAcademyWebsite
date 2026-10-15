@@ -19,8 +19,8 @@ test("program tuition matches supplied tables and programming course fees", asyn
   const expectedPrograms = [
     { name: "Rio", summary: "Từ 2.900.000", prices: ["2.900.000", "2.900.000", "3.100.000", "3.100.000", "3.100.000"], sessions: "12 buổi / khóa" },
     { name: "Starter Kit", summary: "Từ 3.200.000", prices: ["3.200.000", "3.200.000", "3.200.000", "3.500.000", "3.500.000", "3.500.000"], sessions: "16 buổi / khóa" },
-    { name: "Lập trình", summary: "3.500.000", prices: Array(6).fill("3.500.000"), sessions: "16 buổi / khóa" },
-    { name: "Điện tử cơ bản", summary: "Từ 3.000.000", prices: ["3.500.000", "3.800.000", "3.800.000", "3.500.000", "3.800.000", "4.100.000", "4.100.000", "3.500.000", "3.800.000", "4.100.000", "4.400.000", "3.000.000", "3.300.000", "3.600.000"], sessions: null },
+    { name: "Tư duy logic & Lập trình", summary: "3.500.000", prices: Array(6).fill("3.500.000"), sessions: "16 buổi / khóa" },
+    { name: "Điện tử cơ bản", summary: "Khóa học từ 3.500.000", prices: ["3.500.000", "3.800.000", "3.800.000", "3.500.000", "3.800.000", "4.100.000", "4.100.000", "3.500.000", "3.800.000", "4.100.000", "4.400.000", "3.000.000", "3.300.000", "3.600.000"], sessions: null },
   ];
   for (const program of expectedPrograms) {
     const card = page.locator(".program-card").filter({ has: page.getByRole("heading", { name: program.name, exact: true }) });
@@ -48,7 +48,7 @@ test("homepage loads all four programs without overflow or broken images", async
   await expect(page).toHaveTitle(/STEM Fighters/);
   await expect(page.locator("h1")).toHaveCount(1);
   await expect(page.locator(".program-card")).toHaveCount(4);
-  for (const name of ["Rio", "Starter Kit", "Lập trình", "Điện tử cơ bản"]) {
+  for (const name of ["Rio", "Starter Kit", "Tư duy logic & Lập trình", "Điện tử cơ bản"]) {
     await expect(page.locator(".program-card").getByRole("heading", { name, exact: true })).toBeVisible();
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
@@ -76,12 +76,13 @@ test("layout fits small phones, tablet and desktop", async ({ page }, testInfo) 
 
 test("each program opens its own curriculum and closes accessibly", async ({ page }) => {
   await page.goto("/");
-  for (const name of ["Rio", "Starter Kit", "Lập trình", "Điện tử cơ bản"]) {
+  for (const name of ["Rio", "Starter Kit", "Tư duy logic & Lập trình", "Điện tử cơ bản"]) {
     const trigger = page.getByRole("button", { name: `Xem chi tiết chương trình ${name}`, exact: true });
     await trigger.click();
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
     await expect(dialog.getByRole("heading", { name, exact: true })).toBeVisible();
+    if (name === "Điện tử cơ bản") await dialog.locator(".curriculum-group h4 button").first().click();
     await expect(dialog.locator(".module-list li").first()).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(dialog).not.toBeVisible();
@@ -89,18 +90,18 @@ test("each program opens its own curriculum and closes accessibly", async ({ pag
   }
 });
 
-test("FAQ reveals answers and trial CTAs use the real hotline", async ({ page }) => {
+test("FAQ reveals answers and trial CTAs reach the registration form", async ({ page }) => {
   await page.goto("/");
   const question = page.getByText("Con chưa từng học lập trình có thể bắt đầu từ đâu?", { exact: true });
   await question.click();
   await expect(page.locator("details[open]")).toContainText("Không yêu cầu kiến thức trước", { ignoreCase: true });
-  await expect(page.locator("#hero-actions").getByRole("link", { name: "Đăng ký học thử" })).toHaveAttribute("href", "tel:0398288830");
-  await page.locator("#dang-ky").scrollIntoViewIfNeeded();
+  await expect(page.locator("#hero-actions").getByRole("link", { name: "Đăng ký học thử" })).toHaveAttribute("href", "#dang-ky");
+  await page.getByRole("heading", { name: "Thông tin đăng ký học thử" }).scrollIntoViewIfNeeded();
   await expect(page.getByRole("heading", { name: "Thông tin đăng ký học thử" })).toBeInViewport();
   const registration = page.locator("#dang-ky");
   await expect(registration).not.toContainText("[CẦN BỔ SUNG]");
   await expect(registration).toContainText("Liên hệ STEM Fighters để được tư vấn lịch học thử phù hợp.");
-  await expect(registration.getByRole("link", { name: "Đăng ký học thử", exact: true })).toHaveAttribute("href", "tel:0398288830");
+  await expect(registration.getByRole("button", { name: "Nhận tư vấn & lịch học thử" })).toHaveAttribute("type", "submit");
   for (const section of [registration, page.locator("footer")]) {
     await expect(section.getByRole("link", { name: "Gọi điện: 0398 288 830", exact: true })).toHaveAttribute("href", "tel:0398288830");
     const mapsLink = section.locator('a[href^="https://www.google.com/maps/search/"]').first();
@@ -111,7 +112,7 @@ test("FAQ reveals answers and trial CTAs use the real hotline", async ({ page })
     await expect(section).toContainText("Tầng 1, 64 đường số 2");
     await expect(section).toContainText("Phường Hiệp Bình, TP. Hồ Chí Minh");
   }
-  await expect(page.locator("form")).toHaveCount(0);
+  await expect(page.locator("form")).toHaveCount(1);
 });
 
 test("phone calls and Zalo chat remain separate contact actions", async ({ page }) => {
@@ -133,7 +134,7 @@ test("phone calls and Zalo chat remain separate contact actions", async ({ page 
     await popup.close();
   }
   await expect(page.locator("#dang-ky").getByRole("link", { name: "Chat Zalo" })).toHaveClass(/button--secondary/);
-  await expect(page.locator("#dang-ky").getByRole("link", { name: "Đăng ký học thử" })).toHaveAttribute("href", "tel:0398288830");
+  await expect(page.locator("#dang-ky").getByRole("button", { name: "Nhận tư vấn & lịch học thử" })).toBeEnabled();
 });
 
 test("contact map uses the shared address and opens Google Maps accessibly", async ({ page }) => {
@@ -194,12 +195,12 @@ test("four equal-weight cards keep facts consistent without exposing curriculum 
     await expect(card.locator(".program-age")).toHaveText(program.audience);
     await expect(card.locator(".program-facts")).toContainText(getProgramCourseCount(program)!);
     await expect(card.locator(".tags span")).toHaveText(program.tags);
-    await expect(card.locator(".module-list")).not.toBeVisible();
+    await expect(card.locator(".module-list:visible")).toHaveCount(0);
     await card.getByRole("button", { name: `Xem chi tiết chương trình ${program.name}`, exact: true }).click();
     const dialog = page.getByRole("dialog");
     await expect(dialog.locator(".dialog-facts")).toContainText(program.audience);
     await expect(dialog.locator(".dialog-facts")).toContainText(getProgramStructure(program)!);
-    await expect(dialog.getByRole("link", { name: "Đăng ký học thử" })).toHaveAttribute("href", "tel:0398288830");
+    await expect(dialog.getByRole("link", { name: "Đăng ký học thử" })).toHaveAttribute("href", "#dang-ky");
     await page.keyboard.press("Escape");
   }
   await expect(cards.nth(3).locator(".program-age")).toHaveText("7–15 tuổi");
@@ -212,7 +213,7 @@ test("four equal-weight cards keep facts consistent without exposing curriculum 
   const primaryLinks = page.locator("a.button--primary");
   for (const link of await primaryLinks.all()) {
     await expect(link).toHaveText("Đăng ký học thử");
-    await expect(link).toHaveAttribute("href", "tel:0398288830");
+    await expect(link).toHaveAttribute("href", "#dang-ky");
   }
 });
 
@@ -233,16 +234,15 @@ test("mobile menu and sticky CTA behave correctly", async ({ page }, testInfo) =
   await page.keyboard.press("Escape");
   await expect(page.getByRole("button", { name: "Mở menu" })).toBeFocused();
   if (testInfo.project.name === "mobile") {
-    await expect(page.locator(".mobile-cta").getByRole("link")).toHaveAttribute("href", "tel:0398288830");
+    await expect(page.locator(".mobile-cta").getByRole("link")).toHaveAttribute("href", "#dang-ky");
+    await page.locator(".mobile-cta").getByRole("link").click();
   } else {
     await page.getByRole("button", { name: "Mở menu" }).click();
     const trialLink = page.getByRole("navigation", { name: "Điều hướng di động" }).getByRole("link", { name: "Đăng ký học thử" });
-    await expect(trialLink).toHaveAttribute("href", "tel:0398288830");
-    await trialLink.evaluate(link => link.addEventListener("click", event => event.preventDefault(), { once: true }));
+    await expect(trialLink).toHaveAttribute("href", "#dang-ky");
     await trialLink.click();
     await expect(page.getByRole("button", { name: "Mở menu" })).toHaveAttribute("aria-expanded", "false");
   }
-  await page.locator("#dang-ky").scrollIntoViewIfNeeded();
-  await expect(page.getByRole("heading", { name: "Thông tin đăng ký học thử" })).toBeInViewport();
+  await expect(page.getByLabel("Tên phụ huynh")).toBeInViewport();
   await expect(page.locator(".mobile-cta")).not.toBeVisible();
 });

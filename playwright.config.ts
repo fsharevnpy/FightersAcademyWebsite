@@ -13,7 +13,8 @@ export default defineConfig({
   webServer: {
     command: "npm run start -- --port 3100",
     url: "http://127.0.0.1:3100",
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
+    env: { GOOGLE_SHEET_ID: "", GOOGLE_SERVICE_ACCOUNT_EMAIL: "", GOOGLE_PRIVATE_KEY: "" },
     timeout: 60_000,
   },
 });

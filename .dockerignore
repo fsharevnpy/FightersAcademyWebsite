@@ -5,3 +5,8 @@ source
 test-results
 playwright-report
 .env*
+*service-account*.json
+stem-fighters-leads-*.json
+*.pem
+*.key
+credentials/

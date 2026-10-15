@@ -1,23 +1,24 @@
 import type { ReactNode } from "react";
-import { ArrowUpRight, CalendarDays, MapPin, MessageCircle, Phone } from "lucide-react";
+import { ArrowUpRight, CalendarDays, Facebook, MapPin, MessageCircle, Phone } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
-import { TrialCTA } from "@/components/ui/trial-cta";
+import { TrialRegistrationForm } from "./trial-registration-form";
 import { contact, trialContact } from "@/content/contact";
 
-export function RegistrationSection({ children = <TrialCTA /> }: { children?: ReactNode }) {
+export function RegistrationSection({ children = <TrialRegistrationForm /> }: { children?: ReactNode }) {
   return <section id="dang-ky" className="registration-section" aria-labelledby="registration-title">
     <div className="container registration-panel">
       <div className="registration-copy">
         <p className="eyebrow"><span aria-hidden="true" />HẸN GẶP TẠI STEM FIGHTERS</p>
         <h2 id="registration-title">Cùng tìm chương trình<br />phù hợp cho con.</h2>
-        <p>Gọi điện hoặc nhắn Zalo để được tư vấn chương trình và đăng ký học thử cho con.</p>
+        <p>Đăng ký bên dưới hoặc liên hệ trực tiếp để được tư vấn chương trình phù hợp cho con.</p>
         <div className="registration-hotline">
           <span>Gọi điện tư vấn & đăng ký</span>
           <a href={contact.phoneHref} aria-label={`Gọi điện: ${contact.phone}`}><Phone size={26} strokeWidth={1.6} aria-hidden="true" />{contact.phone}</a>
         </div>
+        <div className="registration-action">{children}</div>
         <div className="registration-contact-options">
-          <div className="registration-action">{children}</div>
           <ButtonLink href={contact.zaloHref} target="_blank" rel="noopener noreferrer" variant="secondary">Chat Zalo<MessageCircle size={18} aria-hidden="true" /></ButtonLink>
+          <ButtonLink href={contact.facebookHref} target="_blank" rel="noopener noreferrer" variant="tertiary">Facebook STEM Fighters<Facebook size={18} aria-hidden="true" /></ButtonLink>
         </div>
       </div>
       <div className="registration-info">

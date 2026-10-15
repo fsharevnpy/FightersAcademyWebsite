@@ -52,7 +52,7 @@ export const programs: Program[] = [
     tuitionSource: "source/khoahoc/Stem Starter Kit.jpg",
   },
   {
-    id: "lap-trinh", number: "03", name: "Lập trình", category: "LOGIC & THUẬT TOÁN",
+    id: "lap-trinh", number: "03", name: "Tư duy logic & Lập trình", category: "LOGIC & THUẬT TOÁN",
     description: "Cho trẻ xây nền tảng tư duy trước khi viết chương trình: nhận biết quy luật, suy luận và sắp xếp trình tự.",
     audience: "5–7 tuổi · theo giáo trình",
     tags: ["Quy luật", "Logic", "Thuật toán"],
@@ -116,8 +116,28 @@ export function getTuitionSummary(program: Program) {
   const amounts = program.modules.flatMap(module => module.tuition === undefined ? [] : [module.tuition]);
   if (amounts.length !== program.modules.length || amounts.length === 0) return null;
   const lowest = Math.min(...amounts);
+  if (program.modules.some(module => module.unit === "chuyên đề")) {
+    const courses = program.modules.filter(module => module.unit !== "chuyên đề");
+    const topics = program.modules.filter(module => module.unit === "chuyên đề");
+    return [
+      ...(courses.length ? [`Khóa học từ ${formatTuition(Math.min(...courses.map(module => module.tuition!)))}`] : []),
+      `Chuyên đề từ ${formatTuition(Math.min(...topics.map(module => module.tuition!)))}`,
+    ].join("\n");
+  }
   const unit = program.modules.some(module => module.unit === "chuyên đề") ? "khóa hoặc chuyên đề" : "khóa";
   return `${amounts.some(amount => amount !== lowest) ? "Từ " : ""}${formatTuition(lowest)} / ${unit}`;
+}
+
+export function getProgramModuleGroups(program: Program) {
+  const groups = new Map<string, Program["modules"]>();
+  for (const courseModule of program.modules) {
+    const level = courseModule.group?.split(" · ")[0];
+    if (!level) throw new Error(`Missing curriculum level for ${program.id}`);
+    const modules = groups.get(level) ?? [];
+    modules.push(courseModule);
+    groups.set(level, modules);
+  }
+  return Array.from(groups, ([name, modules]) => ({ name, modules }));
 }
 
 export const faqs = [

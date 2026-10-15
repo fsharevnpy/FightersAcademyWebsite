@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@fontsource/be-vietnam-pro": "^5.2.0",
+    "@googleapis/sheets": "^18.1.1",
     "lucide-react": "^0.468.0",
     "next": "^16.0.0",
     "react": "^19.2.0",

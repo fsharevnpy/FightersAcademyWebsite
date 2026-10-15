@@ -6,3 +6,8 @@ out/
 !.env.example
 test-results/
 playwright-report/
+*service-account*.json
+stem-fighters-leads-*.json
+*.pem
+*.key
+credentials/

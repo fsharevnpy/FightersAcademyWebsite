@@ -1,10 +1,11 @@
 import { Users, Layers3 } from "lucide-react";
-import { formatTuition, getProgramCourseCount, getProgramStructure, getTuitionSummary, programs } from "@/content/programs";
+import { getProgramCourseCount, getProgramStructure, getTuitionSummary, programs } from "@/content/programs";
 import { trialContact } from "@/content/contact";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { TrialCTA } from "@/components/ui/trial-cta";
 import { ProgramArt } from "./program-art";
 import { ProgramDialog } from "./program-dialog";
+import { ProgramCurriculum } from "./program-curriculum";
 
 export function ProgramsSection() {
   return (
@@ -38,14 +39,11 @@ export function ProgramsSection() {
                   <p className="dialog-description">{program.description}</p>
                   <div className="dialog-facts"><span>{program.audience}</span><span>{getProgramStructure(program)}</span></div>
                   <h3>Các khóa học & học phí</h3>
-                  <ol className="module-list">{program.modules.map((module, index) => <li key={`${module.group ?? ""}-${module.name}`}>
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    <div className="module-content">{module.group && <span className="module-group">{module.group}</span>}<strong>{module.name}</strong>{module.sessions && <span className="module-sessions">{module.sessions} buổi / khóa</span>}</div>
-                    {module.tuition !== undefined && <span className="module-tuition">{formatTuition(module.tuition)}<small>/ {module.unit ?? "khóa"}</small></span>}
-                  </li>)}</ol>
+                  <ProgramCurriculum program={program} />
                   <p className="dialog-notice">Học phí tính cho từng khóa hoặc chuyên đề, không phải toàn bộ lộ trình. {trialContact.schedule}</p>
-                  <TrialCTA />
+                  <TrialCTA program={program.id} />
                 </ProgramDialog>
+                <TrialCTA program={program.id} />
               </div>
             </article>
           );})}
