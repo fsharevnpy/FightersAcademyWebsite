@@ -3,11 +3,11 @@
 import { useRef, useState, type FormEvent } from "react";
 import { contact } from "@/content/contact";
 import { Button } from "@/components/ui/button";
-import { isRecord, leadLimits, leadMessages, leadPrograms, undecidedProgram, validateLead, type LeadErrors, type LeadField } from "@/lib/leads";
+import { isRecord, leadLimits, leadMessages, leadPrograms, validateLead, type LeadErrors, type LeadField } from "@/lib/leads";
 import { useTrialRegistration } from "./trial-registration-provider";
 
 export function TrialRegistrationForm() {
-  const { selectedProgram, setSelectedProgram, getAttribution } = useTrialRegistration();
+  const { selectedProgram, setSelectedProgram, selectProgram, getAttribution } = useTrialRegistration();
   const [errors, setErrors] = useState<LeadErrors>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const submitting = useRef(false);
@@ -41,7 +41,7 @@ export function TrialRegistrationForm() {
       const result: unknown = await response.json();
       if (!response.ok || !isRecord(result) || result.success !== true) throw new Error("Lead submission failed");
       form.reset();
-      setSelectedProgram(undecidedProgram);
+      selectProgram();
       setStatus("success");
     } catch {
       setStatus("error");

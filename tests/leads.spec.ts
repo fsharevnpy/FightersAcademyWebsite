@@ -30,24 +30,25 @@ test("hero, renamed program, separate electronics prices and official Facebook r
 });
 
 test("electronics has four keyboard-accessible collapsed groups with all 14 modules intact", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: "Xem chi tiết chương trình Điện tử cơ bản", exact: true }).click();
-  const dialog = page.getByRole("dialog");
-  const toggles = dialog.locator(".curriculum-group h4 button");
+  await page.goto("/khoa-hoc/dien-tu-co-ban");
+  const curriculum = page.locator("#lo-trinh");
+  const toggles = curriculum.locator(".curriculum-group h3 button");
   await expect(toggles).toHaveText([
     "Kỹ sư nhí tập sự3 khóa", "Kỹ sư nhí chính thức4 khóa", "Kỹ sư nhí cao cấp4 khóa", "Kỹ sư nhí chuyên sâu3 chuyên đề",
   ]);
-  await expect(dialog.locator(".module-list li")).toHaveCount(14);
+  await expect(curriculum.locator(".module-list li")).toHaveCount(14);
   for (const toggle of await toggles.all()) await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await toggles.first().focus();
   await page.keyboard.press("Tab");
+  await page.keyboard.press("Shift+Tab");
   await expect(toggles.first()).toBeFocused();
   expect(await toggles.first().evaluate(element => getComputedStyle(element).outlineStyle)).toBe("solid");
   await page.keyboard.press("Enter");
   await expect(toggles.first()).toHaveAttribute("aria-expanded", "true");
-  await expect(dialog.locator(".module-list").first().locator("li")).toHaveCount(3);
-  await expect(dialog.locator(".module-list").first()).toBeVisible();
+  await expect(curriculum.locator(".module-list").first().locator("li")).toHaveCount(3);
+  await expect(curriculum.locator(".module-list").first()).toBeVisible();
   await page.keyboard.press("Space");
-  await expect(dialog.locator(".module-list").first()).not.toBeVisible();
+  await expect(curriculum.locator(".module-list").first()).not.toBeVisible();
   const audit = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
   expect(audit.violations).toEqual([]);
 });
@@ -58,15 +59,17 @@ test("program card/detail CTAs preselect the one form and hero resets the select
   await expect(page.locator("form")).toHaveCount(1);
   for (const program of programs) {
     const card = page.locator(".program-card").filter({ has: page.getByRole("heading", { name: program.name, exact: true }) });
-    await card.locator(".program-card-bottom > a").click();
+    await card.getByRole("link", { name: "Đăng ký học thử" }).click();
     await expect(page.getByLabel("Chương trình quan tâm")).toHaveValue(program.name);
     await expect(page.getByLabel("Tên phụ huynh")).toBeInViewport();
     await expect(page.getByRole("form", { name: "Đăng ký học thử" })).toBeFocused();
-    await card.getByRole("button", { name: `Xem chi tiết chương trình ${program.name}`, exact: true }).click();
-    await page.getByRole("dialog").getByRole("link", { name: "Đăng ký học thử" }).click();
-    await expect(page.getByRole("dialog")).not.toBeVisible();
+    await card.getByRole("link", { name: `Xem chi tiết chương trình ${program.name}`, exact: true }).click();
+    await expect(page.getByRole("heading", { level: 1, name: program.name, exact: true })).toBeVisible();
+    await page.locator("#hero-actions").getByRole("link", { name: "Đăng ký học thử" }).click();
     await expect(page.getByLabel("Chương trình quan tâm")).toHaveValue(program.name);
     await expect(page.getByRole("form", { name: "Đăng ký học thử" })).toBeFocused();
+    await page.getByRole("link", { name: "Trang chủ", exact: true }).click();
+    await expect(page.locator(".program-card")).toHaveCount(4);
   }
   await page.locator("#hero-actions").getByRole("link", { name: "Đăng ký học thử" }).click();
   await expect(page.getByLabel("Chương trình quan tâm")).toHaveValue(undecidedProgram);

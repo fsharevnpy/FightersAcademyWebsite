@@ -1,7 +1,8 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
-import { programs, type ProgramId } from "@/content/programs";
+import { usePathname } from "next/navigation";
+import { getProgramPath, programs, type ProgramId } from "@/content/programs";
 import { undecidedProgram } from "@/lib/leads";
 import { captureAttribution, emptyAttribution } from "@/lib/lead-attribution";
 
@@ -13,14 +14,26 @@ type TrialContextValue = {
 };
 const TrialContext = createContext<TrialContextValue | null>(null);
 
+function programName(id?: ProgramId) {
+  if (!id) return undecidedProgram;
+  const program = programs.find(program => program.id === id);
+  if (!program) throw new Error("Unknown trial program.");
+  return program.name;
+}
+
 export function TrialRegistrationProvider({ children }: { children: ReactNode }) {
-  const [selectedProgram, setSelectedProgram] = useState(undecidedProgram);
+  const pathname = usePathname();
+  const currentProgram = programs.find(program => getProgramPath(program) === pathname);
+  const defaultSelection = programName(currentProgram?.id);
+  const [selection, setSelection] = useState({ pathname, program: defaultSelection });
+  const selectedProgram = selection.pathname === pathname ? selection.program : defaultSelection;
+  const setSelectedProgram = (program: string) => setSelection({ pathname, program });
   const attribution = useRef(emptyAttribution);
-  useEffect(() => { attribution.current = captureAttribution(attribution.current); }, []);
+  useEffect(() => { attribution.current = captureAttribution(attribution.current); }, [pathname]);
   return <TrialContext.Provider value={{
     selectedProgram,
     setSelectedProgram,
-    selectProgram: id => setSelectedProgram(id ? programs.find(program => program.id === id)!.name : undecidedProgram),
+    selectProgram: id => setSelectedProgram(programName(id ?? currentProgram?.id)),
     getAttribution: () => {
       attribution.current = captureAttribution(attribution.current);
       return attribution.current;

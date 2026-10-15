@@ -1,3 +1,5 @@
+export const siteUrl = "https://stem.fightersacademy.com.vn";
+
 const streetAddress = "64 đường số 2";
 const localityLines = [
   "Khu đô thị Vạn Phúc",

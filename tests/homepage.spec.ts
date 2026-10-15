@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { getProgramCourseCount, getProgramStructure, getTuitionSummary, programs } from "../content/programs";
+import { getProgramCourseCount, getProgramPath, getProgramStructure, getTuitionSummary, programs } from "../content/programs";
 
 test("course summaries derive from curriculum and omit unavailable fees", () => {
   expect(programs.map(getProgramCourseCount)).toEqual(["5 khóa", "6 khóa", "6 khóa", "14 khóa & chuyên đề"]);
@@ -23,21 +23,21 @@ test("program tuition matches supplied tables and programming course fees", asyn
     { name: "Điện tử cơ bản", summary: "Khóa học từ 3.500.000", prices: ["3.500.000", "3.800.000", "3.800.000", "3.500.000", "3.800.000", "4.100.000", "4.100.000", "3.500.000", "3.800.000", "4.100.000", "4.400.000", "3.000.000", "3.300.000", "3.600.000"], sessions: null },
   ];
   for (const program of expectedPrograms) {
+    await page.goto("/");
     const card = page.locator(".program-card").filter({ has: page.getByRole("heading", { name: program.name, exact: true }) });
     await expect(card.locator(".program-tuition")).toContainText(program.summary);
-    await card.getByRole("button", { name: `Xem chi tiết chương trình ${program.name}`, exact: true }).click();
-    const dialog = page.getByRole("dialog");
-    await expect(dialog.locator(".module-tuition")).toHaveCount(program.prices.length);
-    await expect(dialog.locator(".module-tuition")).toContainText(program.prices);
-    await expect(dialog.locator(".module-sessions")).toHaveCount(program.sessions ? program.prices.length : 0);
-    if (program.sessions) await expect(dialog.locator(".module-sessions")).toHaveText(program.prices.map(() => program.sessions!));
+    await card.getByRole("link", { name: `Xem chi tiết chương trình ${program.name}`, exact: true }).click();
+    const curriculum = page.locator("#lo-trinh");
+    await expect(curriculum.locator(".module-tuition")).toHaveCount(program.prices.length);
+    await expect(curriculum.locator(".module-tuition")).toContainText(program.prices);
+    await expect(curriculum.locator(".module-sessions")).toHaveCount(program.sessions ? program.prices.length : 0);
+    if (program.sessions) await expect(curriculum.locator(".module-sessions")).toHaveText(program.prices.map(() => program.sessions!));
     if (program.name === "Điện tử cơ bản") {
-      await expect(dialog.locator(".module-tuition small").filter({ hasText: "/ chuyên đề" })).toHaveCount(3);
-      await expect(dialog.locator(".module-group").filter({ hasText: "Khóa 2+" })).toHaveCount(1);
-      await expect(dialog.locator(".module-group").filter({ hasText: "Khóa 3+" })).toHaveCount(2);
+      await expect(curriculum.locator(".module-tuition small").filter({ hasText: "/ chuyên đề" })).toHaveCount(3);
+      await expect(curriculum.locator(".module-group").filter({ hasText: "Khóa 2+" })).toHaveCount(1);
+      await expect(curriculum.locator(".module-group").filter({ hasText: "Khóa 3+" })).toHaveCount(2);
     }
-    expect(await dialog.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
-    await page.keyboard.press("Escape");
+    expect(await curriculum.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
   }
 });
 
@@ -74,27 +74,26 @@ test("layout fits small phones, tablet and desktop", async ({ page }, testInfo) 
   }
 });
 
-test("each program opens its own curriculum and closes accessibly", async ({ page }) => {
-  await page.goto("/");
-  for (const name of ["Rio", "Starter Kit", "Tư duy logic & Lập trình", "Điện tử cơ bản"]) {
-    const trigger = page.getByRole("button", { name: `Xem chi tiết chương trình ${name}`, exact: true });
-    await trigger.click();
-    const dialog = page.getByRole("dialog");
-    await expect(dialog).toBeVisible();
-    await expect(dialog.getByRole("heading", { name, exact: true })).toBeVisible();
-    if (name === "Điện tử cơ bản") await dialog.locator(".curriculum-group h4 button").first().click();
-    await expect(dialog.locator(".module-list li").first()).toBeVisible();
-    await page.keyboard.press("Escape");
-    await expect(dialog).not.toBeVisible();
-    await expect(trigger).toBeFocused();
+test("each program links to its curriculum and back to the homepage", async ({ page }) => {
+  for (const program of programs) {
+    await page.goto("/");
+    const link = page.getByRole("link", { name: `Xem chi tiết chương trình ${program.name}`, exact: true });
+    await expect(link).toHaveAttribute("href", getProgramPath(program));
+    await link.click();
+    await expect(page.getByRole("heading", { name: program.name, exact: true, level: 1 })).toBeVisible();
+    if (program.id === "dien-tu-co-ban") await page.locator(".curriculum-group h3 button").first().click();
+    await expect(page.locator(".module-list li").first()).toBeVisible();
+    await page.getByRole("link", { name: "Trang chủ", exact: true }).click();
+    await expect(page.locator(".program-card")).toHaveCount(4);
   }
 });
 
 test("FAQ reveals answers and trial CTAs reach the registration form", async ({ page }) => {
   await page.goto("/");
-  const question = page.getByText("Con chưa từng học lập trình có thể bắt đầu từ đâu?", { exact: true });
+  const question = page.getByText("Con chưa từng học STEM hoặc lập trình thì nên bắt đầu từ đâu?", { exact: true });
   await question.click();
-  await expect(page.locator("details[open]")).toContainText("Không yêu cầu kiến thức trước", { ignoreCase: true });
+  await expect(page.locator("details[open]")).toContainText("Không mặc định mọi trẻ đều phải bắt đầu từ Rio.");
+  await expect(page.locator(".faq-list details")).toHaveCount(7);
   await expect(page.locator("#hero-actions").getByRole("link", { name: "Đăng ký học thử" })).toHaveAttribute("href", "#dang-ky");
   await page.getByRole("heading", { name: "Thông tin đăng ký học thử" }).scrollIntoViewIfNeeded();
   await expect(page.getByRole("heading", { name: "Thông tin đăng ký học thử" })).toBeInViewport();
@@ -195,15 +194,12 @@ test("four equal-weight cards keep facts consistent without exposing curriculum 
     await expect(card.locator(".program-age")).toHaveText(program.audience);
     await expect(card.locator(".program-facts")).toContainText(getProgramCourseCount(program)!);
     await expect(card.locator(".tags span")).toHaveText(program.tags);
-    await expect(card.locator(".module-list:visible")).toHaveCount(0);
-    await card.getByRole("button", { name: `Xem chi tiết chương trình ${program.name}`, exact: true }).click();
-    const dialog = page.getByRole("dialog");
-    await expect(dialog.locator(".dialog-facts")).toContainText(program.audience);
-    await expect(dialog.locator(".dialog-facts")).toContainText(getProgramStructure(program)!);
-    await expect(dialog.getByRole("link", { name: "Đăng ký học thử" })).toHaveAttribute("href", "#dang-ky");
-    await page.keyboard.press("Escape");
+    await expect(card.locator(".module-list")).toHaveCount(0);
+    await expect(card.getByRole("link", { name: `Xem chi tiết chương trình ${program.name}`, exact: true })).toHaveAttribute("href", getProgramPath(program));
+    await expect(card.getByRole("link", { name: "Đăng ký học thử" })).toHaveAttribute("href", "#dang-ky");
   }
   await expect(cards.nth(3).locator(".program-age")).toHaveText("7–15 tuổi");
+  await expect(page.locator("dialog, .module-list, .curriculum-group")).toHaveCount(0);
   await expect(page.locator("body")).not.toContainText(/\[CẦN BỔ SUNG\]|đang (được )?cập nhật|sẽ cập nhật sau|placeholder|TODO|TBD/i);
   const brokenAnchors = await page.locator('a[href^="#"]').evaluateAll(links =>
     links.map(link => link.getAttribute("href")!)
@@ -234,8 +230,9 @@ test("mobile menu and sticky CTA behave correctly", async ({ page }, testInfo) =
   await page.keyboard.press("Escape");
   await expect(page.getByRole("button", { name: "Mở menu" })).toBeFocused();
   if (testInfo.project.name === "mobile") {
-    await expect(page.locator(".mobile-cta").getByRole("link")).toHaveAttribute("href", "#dang-ky");
-    await page.locator(".mobile-cta").getByRole("link").click();
+    await expect(page.locator(".mobile-cta").getByRole("link", { name: "Đăng ký học thử" })).toHaveAttribute("href", "#dang-ky");
+    await expect(page.locator(".mobile-cta").getByRole("link", { name: "Chat Zalo" })).toHaveAttribute("href", "https://zalo.me/0398288830");
+    await page.locator(".mobile-cta").getByRole("link", { name: "Đăng ký học thử" }).click();
   } else {
     await page.getByRole("button", { name: "Mở menu" }).click();
     const trialLink = page.getByRole("navigation", { name: "Điều hướng di động" }).getByRole("link", { name: "Đăng ký học thử" });

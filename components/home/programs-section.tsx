@@ -1,11 +1,8 @@
-import { Users, Layers3 } from "lucide-react";
-import { getProgramCourseCount, getProgramStructure, getTuitionSummary, programs } from "@/content/programs";
-import { trialContact } from "@/content/contact";
+import Link from "next/link";
+import { ArrowUpRight, Users, Layers3 } from "lucide-react";
+import { getProgramCourseCount, getProgramPath, getTuitionSummary, programs } from "@/content/programs";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { TrialCTA } from "@/components/ui/trial-cta";
-import { ProgramArt } from "./program-art";
-import { ProgramDialog } from "./program-dialog";
-import { ProgramCurriculum } from "./program-curriculum";
 
 export function ProgramsSection() {
   return (
@@ -26,8 +23,7 @@ export function ProgramsSection() {
                 <span className="program-number">/{program.number}</span>
               </div>
               <div className="program-card-main">
-                <div><h3>{program.name}</h3><div className="program-age"><Users size={15} aria-hidden="true" /><span>{program.audience}</span></div><p>{program.description}</p></div>
-                <ProgramArt kind={program.id} />
+                <div><h3>{program.name}</h3><div className="program-age"><Users size={15} aria-hidden="true" /><span>{program.audience}</span></div><p>{program.summary}</p></div>
               </div>
               <div className="program-facts">
                 {courseCount && <span><Layers3 size={15} aria-hidden="true" />{courseCount}</span>}
@@ -35,14 +31,7 @@ export function ProgramsSection() {
               </div>
               {tuition && <div className="program-tuition"><span>Học phí</span><strong>{tuition}</strong></div>}
               <div className="program-card-bottom">
-                <ProgramDialog name={program.name} number={program.number}>
-                  <p className="dialog-description">{program.description}</p>
-                  <div className="dialog-facts"><span>{program.audience}</span><span>{getProgramStructure(program)}</span></div>
-                  <h3>Các khóa học & học phí</h3>
-                  <ProgramCurriculum program={program} />
-                  <p className="dialog-notice">Học phí tính cho từng khóa hoặc chuyên đề, không phải toàn bộ lộ trình. {trialContact.schedule}</p>
-                  <TrialCTA program={program.id} />
-                </ProgramDialog>
+                <Link href={getProgramPath(program)} className="button button--tertiary" aria-label={`Xem chi tiết chương trình ${program.name}`}>Xem chi tiết<ArrowUpRight size={18} aria-hidden="true" /></Link>
                 <TrialCTA program={program.id} />
               </div>
             </article>

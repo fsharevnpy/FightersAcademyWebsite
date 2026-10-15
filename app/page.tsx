@@ -11,5 +11,5 @@ import { FAQSection } from "@/components/home/faq-section";
 import { RegistrationSection } from "@/components/home/registration-section";
 
 export default function Home() {
-  return <div id="top"><SiteHeader /><main id="main-content" tabIndex={-1}><Hero /><ProgramsSection /><ActivityGallery /><LearningExamples /><LearningProcess /><ProgressSection /><FAQSection /><RegistrationSection /></main><SiteFooter /><MobileCTA /></div>;
+  return <div id="top" className="homepage"><SiteHeader /><main id="main-content" tabIndex={-1}><Hero /><ProgramsSection /><ActivityGallery /><LearningExamples /><LearningProcess /><ProgressSection /><FAQSection /><RegistrationSection /></main><SiteFooter /><MobileCTA /></div>;
 }

@@ -1,6 +1,6 @@
-# STEM Fighters — Homepage V1
+# STEM Fighters — Homepage & Course Pages
 
-Homepage Next.js App Router + TypeScript + Tailwind CSS, theo Design System đã duyệt. Bốn chương trình có mức nổi bật ngang nhau. Form học thử gửi qua API server tới Google Sheets. Không có Supabase, Apps Script, Drive API, analytics, tài khoản hoặc các trang khóa học riêng ở phase này.
+Website Next.js App Router + TypeScript + Tailwind CSS, theo Design System đã duyệt. Homepage giúp so sánh bốn chương trình ngang hàng; mỗi chương trình có landing page riêng. Form học thử dùng chung, gửi qua API server tới Google Sheets. Không có Supabase, Apps Script, Drive API, analytics hoặc tài khoản.
 
 ## Thiết lập nhận lead
 
@@ -33,15 +33,15 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-Playwright chạy production server cổng 3100 và kiểm tra mobile 390px, tablet 768px, desktop 1440px: bốn chương trình, dialog và focus, menu mobile, FAQ, ảnh, overflow và CTA học thử.
+Playwright chạy production server cổng 3100 với Google credentials trống. Ba project chính kiểm tra 390/768/1440px; viewport sweep bổ sung 375/1024px cho homepage, Rio và Điện tử cơ bản. Kiểm tra SEO/HTML không cần JavaScript, curriculum, keyboard/focus, menu, FAQ, ảnh, overflow, honeypot, mobile CTA và form/UTM. Test giao diện dùng API fixture; kiểm tra append dùng Google client với server fixture cục bộ, không ghi lead thử vào Sheet thật.
 
 ## Cấu trúc
 
-- `app/`: homepage, metadata và CSS tokens/Tailwind.
+- `app/`: homepage, metadata và CSS tokens/Tailwind; `app/khoa-hoc/[slug]/page.tsx`: bốn course pages dựng HTML tĩnh; `app/sitemap.ts`, `app/robots.ts`: sitemap và robots theo convention Next.js.
 - `components/ui/`: Button, Brand, SectionHeading.
 - `components/layout/`: header, footer, mobile CTA.
-- `components/home/`: các section riêng của homepage, artwork SVG và dialog chương trình.
-- `content/programs.ts`: dữ liệu bốn chương trình, nội dung giáo trình, học phí từng khóa/chuyên đề, nguồn học phí và FAQ.
+- `components/home/`: các section homepage và component curriculum, FAQ, form được reuse trên course pages.
+- `content/programs.ts`: nguồn dữ liệu bốn chương trình, slug, summary ngắn cho homepage (giữ nguyên description đầy đủ), nội dung giáo trình, học phí từng khóa/chuyên đề, nguồn học phí, kỹ năng và FAQ chung/riêng.
 - `content/contact.ts`: hotline, địa chỉ, Google Maps và nội dung CTA/lịch học thử dùng chung.
 - `content/media.ts`: ảnh hoạt động, alt text, caption, điểm crop và đường dẫn ảnh gốc cho các ảnh mới.
 - `lib/leads.ts`: validation và whitelist chương trình dùng chung; `lib/lead-attribution.ts`: UTM của phiên, không lưu dữ liệu lead.
@@ -52,20 +52,33 @@ Font Be Vietnam Pro self-hosted qua package `@fontsource`. Hình minh họa SVG 
 
 Gallery “Hoạt động tại STEM Fighters” dùng 6 ảnh, 3 cột trên tablet/desktop và 2 cột trên mobile. Các ảnh là tư liệu hoạt động chung, không đại diện cho một sự kiện duy nhất; tên thư mục gốc `source/workshop/` không phải nhãn sự kiện trên website. Bảy ảnh được chọn từ thư mục này đã chuyển thành WebP (cạnh dài tối đa 1280px, quality 82, bỏ metadata), giữ nguyên bản gốc. `next/image` tiếp tục tối ưu kích thước theo màn hình và tải lazy dưới hero. Không thêm lightbox hoặc nút ảnh giả.
 
-“Học để làm được” dùng ảnh lắp ráp chung, tách biệt với bốn ví dụ lấy từ giáo trình. “Cách học” giữ nguyên bốn bước và dùng lại hai ảnh lớp học/lập trình có sẵn. Giữ nguyên ảnh hero và các card chương trình; không suy diễn ảnh thuộc khóa học nào.
+“Học để làm được” dùng ảnh lắp ráp chung; các ví dụ cụ thể từ giáo trình nằm ở course page tương ứng. “Cách học” giữ nguyên bốn bước và dùng lại hai ảnh lớp học/lập trình có sẵn. Giữ nguyên ảnh hero, không suy diễn ảnh thuộc khóa học nào. Card homepage được thu gọn; artwork SVG hiện có được dùng trên hero của từng course page.
 
 ## Tương tác trong phase này
 
-- Navbar sử dụng anchor trong homepage, không dẫn tới trang chưa làm.
-- Bốn card ngang hàng hiển thị độ tuổi, mô tả, hướng khám phá, kỹ năng, số khóa và học phí. Nút “Xem chi tiết” mở dialog curriculum hiện có; không tạo trang mới.
-- `content/programs.ts` là nguồn dữ liệu khóa học: số khóa, tổng số buổi và học phí tóm tắt được tính từ `modules`. Giữ đầy đủ curriculum và `id` làm slug cho `/khoa-hoc/[slug]` ở phase sau.
-- CTA “Đăng ký học thử” dùng chung `TrialCTA`, cuộn đến một form ở `#dang-ky`. CTA theo chương trình chọn sẵn chương trình; CTA chung chọn “Chưa xác định / Cần tư vấn”. ID `lap-trinh` được giữ ổn định, tên hiển thị là “Tư duy logic & Lập trình”.
+- Navbar trên course page liên kết về các section homepage; breadcrumb về trang chủ. Mỗi course page liên kết tới ba chương trình còn lại.
+- Bốn card ngang hàng chỉ hiển thị tóm tắt, độ tuổi, ba keyword, số khóa, học phí và CTA. “Xem chi tiết” là HTML link tới course page; homepage không render curriculum, accordion hay modal chương trình.
+- `content/programs.ts` là nguồn dữ liệu khóa học: số khóa, tổng số buổi và học phí tóm tắt được tính từ `modules`. Giữ nguyên toàn bộ modules, độ tuổi, tên và học phí. `id` nội bộ `lap-trinh` không đổi; `slug` SEO là `tu-duy-logic-lap-trinh`.
+- CTA “Đăng ký học thử” dùng chung `TrialCTA`, cuộn/focus một form ở `#dang-ky` ngay trên trang hiện tại. Course page mặc định chọn chương trình tương ứng (vẫn có thể thay đổi); homepage CTA chung chọn “Chưa xác định / Cần tư vấn”. Provider giữ UTM qua điều hướng client; `sourcePage` ghi pathname của trang gửi form. Không thay schema/API Google Sheets.
+- Sticky CTA dưới 768px có “Đăng ký học thử” và “Chat Zalo”, dùng URL liên hệ hiện có. IntersectionObserver chỉ hiện sau hero và ẩn khi khu vực đăng ký/footer xuất hiện; cũng ẩn khi menu mở. Có safe-area dưới cùng.
+- “Website” là honeypot: vẫn tồn tại trong form, được clip 1px/absolute, `aria-hidden`, `tabIndex=-1`, `autoComplete=off`; không chiếm chỗ và không yêu cầu phụ huynh nhập. Client và server vẫn từ chối khi field có dữ liệu.
 - Số điện thoại được ghi rõ “Gọi điện”; “Chat Zalo” và Facebook chính thức là lựa chọn liên hệ riêng, không thay đích form của CTA học thử.
 - Bản đồ Google Maps nhỏ tại khối liên hệ dùng chung địa chỉ với link chỉ đường, tải lazy qua iframe. Click hoặc dùng bàn phím trên bản đồ mở Google Maps ở tab mới; bản đồ nằm cạnh địa chỉ trên desktop và bên dưới ở màn hình hẹp. Cần kết nối tới Google để tải bản đồ; link chỉ đường vẫn dùng được nếu embed bị chặn.
 - `TrialRegistrationForm` là nội dung mặc định của `RegistrationSection`. Thành công chỉ sau append được xác nhận; lỗi giữ nguyên dữ liệu. Có honeypot, khóa submit, kiểm tra origin và giới hạn payload. Không ghi lead vào storage của browser.
 - Học phí Rio và Starter Kit theo ảnh trong `source/khoahoc/`; Điện tử theo hai trang PDF cùng thư mục. Tư duy logic & Lập trình có 6 khóa, mỗi khóa 16 buổi và giá 3.500.000 đồng/khóa như trước. Điện tử tách “Khóa học từ 3.500.000đ” và “Chuyên đề từ 3.000.000đ”; toàn bộ 14 khóa/chuyên đề giữ nguyên trong 4 accordion, mặc định đóng trên mọi viewport.
 - Điện tử cơ bản dành cho học viên 7–15 tuổi, theo xác nhận của chủ website. Lịch học thử dùng wording “Liên hệ STEM Fighters để được tư vấn lịch học thử phù hợp.” Dữ liệu học phí chưa đủ sẽ được ẩn; không hiện placeholder. Không tự suy đoán số buổi Điện tử, lịch học, chi phí học thử hoặc thiết bị/học liệu. Hotline và địa chỉ đã được cung cấp; email chưa có nên chưa hiển thị.
 - Lịch trình và sản phẩm trong giáo trình không được trình bày như lịch tuyển sinh hoặc thành tích học viên.
+
+## Course URLs & SEO
+
+- Rio: `/khoa-hoc/rio`
+- Starter Kit: `/khoa-hoc/starter-kit`
+- Tư duy logic & Lập trình: `/khoa-hoc/tu-duy-logic-lap-trinh`
+- Điện tử cơ bản: `/khoa-hoc/dien-tu-co-ban`
+
+Mỗi URL được prerender bằng `generateStaticParams`, có title/description riêng, một H1, self-canonical, Open Graph/Twitter, FAQ riêng, breadcrumb và structured data `BreadcrumbList`. Không thêm rating/review hoặc Course schema thiếu dữ liệu. Slug không hợp lệ trả 404; không tạo route listing rỗng. `/sitemap.xml` gồm homepage và bốn khóa; `/robots.txt` cho phép crawl. Query UTM không xuất hiện trong canonical nhưng vẫn được giữ cho luồng lead hiện có.
+
+Deploy vẫn dùng Next standalone trong Docker, không cần SPA fallback hay thay Cloudflare Tunnel. Sau rebuild/recreate container, kiểm tra trực tiếp và refresh bốn URL, sitemap và robots trên domain thật; kiểm tra cục bộ không thay thế kiểm tra cấu hình Cloudflare hoặc Google Sheets production.
 
 ## Deploy production: Docker + Cloudflare Tunnel
 
@@ -129,7 +142,7 @@ curl -I http://stem.fightersacademy.com.vn
 curl -I https://stem.fightersacademy.com.vn
 ```
 
-Kết quả mong đợi: localhost `200`, HTTP domain `308` tới HTTPS, HTTPS domain `200`. Mở website trên điện thoại và kiểm tra menu, ảnh, dialog chương trình và CTA liên hệ sau mỗi lần deploy.
+Kết quả mong đợi: localhost `200`, HTTP domain `308` tới HTTPS, HTTPS domain `200`. Mở website trên điện thoại và kiểm tra menu, ảnh, bốn course URLs, curriculum, form và sticky CTA sau mỗi lần deploy.
 
 Theo dõi log trực tiếp (Ctrl+C chỉ thoát xem log):
 

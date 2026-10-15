@@ -1,9 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { MessageCircle } from "lucide-react";
+import { contact } from "@/content/contact";
+import { ButtonLink } from "@/components/ui/button";
 import { TrialCTA } from "@/components/ui/trial-cta";
 
 export function MobileCTA() {
+  const pathname = usePathname();
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     const hero = document.getElementById("hero-actions");
@@ -21,6 +26,6 @@ export function MobileCTA() {
     });
     [hero, registration, footer].forEach(node => observer.observe(node));
     return () => observer.disconnect();
-  }, []);
-  return visible ? <div className="mobile-cta"><TrialCTA /></div> : null;
+  }, [pathname]);
+  return visible ? <nav className="mobile-cta" aria-label="Liên hệ nhanh"><TrialCTA /><ButtonLink href={contact.zaloHref} variant="secondary" target="_blank" rel="noopener noreferrer">Chat Zalo<MessageCircle size={18} aria-hidden="true" /></ButtonLink></nav> : null;
 }

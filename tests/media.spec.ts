@@ -2,7 +2,6 @@ import { expect, test } from "@playwright/test";
 import { access, stat } from "node:fs/promises";
 import { resolve } from "node:path";
 import { activityPhotos, learningExamplePhoto, learningProcessPhotos } from "../content/media";
-import { programs } from "../content/programs";
 
 test("selected activity photos retain originals and use compact local assets", async () => {
   const selected = [...activityPhotos, learningExamplePhoto];
@@ -47,17 +46,11 @@ test("general activity gallery stays compact with responsive columns and lazy ph
 test("real learning photos stay separate from course curriculum examples", async ({ page }) => {
   await page.goto("/");
   await page.evaluate(() => document.fonts.ready);
-  const examples = page.getByRole("region", { name: "Ví dụ thực hành trong chương trình" });
+  const examples = page.getByRole("region", { name: "Học để làm được" });
   await expect(examples.getByRole("img", { name: learningExamplePhoto.alt, exact: true })).toHaveAttribute("loading", "lazy");
   await expect(examples.locator(".example-photo")).toContainText("Ảnh hoạt động tại STEM Fighters, không gắn với ví dụ giáo trình cụ thể.");
-  await expect(examples.locator(".example-card")).toHaveCount(4);
-  await expect(examples.locator(".example-card img")).toHaveCount(0);
-  for (const program of programs) {
-    const card = examples.locator(".example-card").filter({ has: page.getByRole("heading", { name: program.example.title, exact: true }) });
-    await expect(card.locator(".example-program")).toHaveText(program.name);
-    await expect(card).toContainText(program.example.description);
-  }
-  await expect(examples).toContainText("Ví dụ được trích từ giáo trình, không phải hồ sơ dự án học viên đã hoàn thành.");
+  await expect(examples.locator(".example-card")).toHaveCount(0);
+  await expect(examples).toContainText("Khám phá ví dụ thực hành và lộ trình tại trang chi tiết của từng chương trình.");
   await expect(page.locator("#cach-hoc .process-step")).toHaveCount(4);
   await expect(page.locator("#cach-hoc img")).toHaveCount(2);
   for (const photo of learningProcessPhotos) {

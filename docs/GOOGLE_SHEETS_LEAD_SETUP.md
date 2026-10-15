@@ -140,7 +140,7 @@ Kiểm tra dòng mới có đủ 11 cột:
 - Created At do server tạo, múi giờ `Asia/Ho_Chi_Minh`, định dạng `yyyy-MM-dd HH:mm`.
 - Số điện thoại được chuẩn hóa: `+84`, `84`, `0084` thành số bắt đầu bằng `0`. Hỗ trợ số di động Việt Nam 10 chữ số và số cố định đầu `02` gồm 11 chữ số.
 - Tuổi nhận tư vấn từ 3–18; đây là phạm vi nhập form, không thay đổi độ tuổi của từng chương trình.
-- Source Page chỉ là pathname, không lưu toàn bộ URL hoặc query.
+- Source Page chỉ là pathname, không lưu toàn bộ URL hoặc query. Course page ghi đường dẫn `/khoa-hoc/...` và chọn sẵn chương trình của trang; phụ huynh vẫn có thể đổi lựa chọn. Ba UTM tiếp tục được giữ qua điều hướng nội bộ.
 - UTM theo nguồn truy cập của phiên. URL không có UTM giữ attribution hiện tại; URL có UTM mới thay toàn bộ bộ ba để không ghép nhầm campaign cũ/mới. Không có dữ liệu thì ghi chuỗi rỗng.
 - Status = **New**, Note = chuỗi rỗng; server tự đặt, không nhận từ browser.
 
@@ -181,7 +181,7 @@ Chỉ cấp quyền Sheet cho người thực sự quản lý leads và Service 
 ## Kiểm thử và trạng thái kết nối
 
 ```bash
-npx playwright test "leads.spec.ts|leads-backend.spec.ts|homepage.spec.ts|qa.spec.ts"
+npx playwright test "leads.spec.ts|leads-backend.spec.ts|homepage.spec.ts|courses.spec.ts|qa.spec.ts"
 ```
 
 Tests dùng Google append giả lập có kiểm soát và API intercept cho UI; không ghi lead vào Sheet thật. Kiểm thử backend dùng official client với access token giả và endpoint local để xác nhận request append, không tạo OAuth/JWT thủ công.

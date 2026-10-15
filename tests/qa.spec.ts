@@ -38,9 +38,6 @@ test("QA: runtime, accessibility, images, layout and performance", async ({ page
     ...(window as Window & { qaMetrics?: { cls: number; lcp: number } }).qaMetrics,
     scripts: performance.getEntriesByType("resource").filter(entry => (entry as PerformanceResourceTiming).initiatorType === "script").map(entry => ({ url: entry.name, bytes: (entry as PerformanceResourceTiming).encodedBodySize })),
   }));
-  await page.getByRole("button", { name: "Xem chi tiết chương trình Rio", exact: true }).click();
-  findings.push({ state: "dialog", result: await new AxeBuilder({ page }).options({ rules: { "label-content-name-mismatch": { enabled: true } } }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze() });
-  await page.keyboard.press("Escape");
   if (testInfo.project.name !== "desktop") {
     await page.getByRole("button", { name: "Mở menu" }).click();
     findings.push({ state: "menu", result: await new AxeBuilder({ page }).options({ rules: { "label-content-name-mismatch": { enabled: true } } }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze() });
@@ -51,7 +48,7 @@ test("QA: runtime, accessibility, images, layout and performance", async ({ page
   expect(await page.locator(".program-card").first().evaluate(el => getComputedStyle(el).transitionDuration)).toBe("0s");
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `test-results/qa-${testInfo.project.name}.png`, fullPage: true });
-  for (const [name, selector] of [["hero", ".hero"], ["programs", "#chuong-trinh"], ["activities", "#hoat-dong"], ["examples", "section[aria-label='Ví dụ thực hành trong chương trình']"], ["process", "#cach-hoc"], ["registration", "#dang-ky"], ["footer", "footer"]]) {
+  for (const [name, selector] of [["hero", ".hero"], ["programs", "#chuong-trinh"], ["activities", "#hoat-dong"], ["examples", "section[aria-label='Học để làm được']"], ["process", "#cach-hoc"], ["registration", "#dang-ky"], ["footer", "footer"]]) {
     await page.locator(selector).screenshot({ path: `test-results/qa-${testInfo.project.name}-${name}.png`, style: ".site-header, .mobile-cta, .skip-link { visibility: hidden !important; }" });
   }
   const violations = findings.flatMap(({ state, result }) => result.violations.map(v => ({ state, rule: v.id, impact: v.impact, nodes: v.nodes.map(node => ({ target: node.target, summary: node.failureSummary })) })));
@@ -61,32 +58,22 @@ test("QA: runtime, accessibility, images, layout and performance", async ({ page
   expect(violations, JSON.stringify(violations, null, 2)).toEqual([]);
 });
 
-test("QA: keyboard navigation, focus containment and hover", async ({ page }) => {
+test("QA: keyboard course navigation, FAQ focus and hover", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Chuyển đến nội dung chính" })).toBeFocused();
   await page.keyboard.press("Enter");
-  const trigger = page.getByRole("button", { name: "Xem chi tiết chương trình Starter Kit", exact: true });
+  const trigger = page.getByRole("link", { name: "Xem chi tiết chương trình Starter Kit", exact: true });
   await trigger.focus();
   expect(await trigger.evaluate(el => getComputedStyle(el).outlineStyle)).toBe("solid");
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("button", { name: "Đóng thông tin chương trình" })).toBeFocused();
-  for (let i = 0; i < 6; i++) {
-    await page.keyboard.press("Tab");
-    expect(await page.evaluate(() => Boolean(document.activeElement?.closest("dialog")))).toBe(true);
-  }
-  await page.keyboard.press("Escape");
-  await expect(trigger).toBeFocused();
-  await page.keyboard.press("Shift+Tab");
-  await page.keyboard.press("Tab");
-  await expect(trigger).toBeFocused();
+  await expect(page).toHaveURL(/\/khoa-hoc\/starter-kit$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Starter Kit", exact: true })).toBeVisible();
+  await expect(page.getByLabel("Chương trình quan tâm")).toHaveValue("Starter Kit");
+  await page.getByRole("link", { name: "Trang chủ", exact: true }).focus();
   await page.keyboard.press("Enter");
-  await page.keyboard.press("Shift+Tab");
-  await expect(page.getByRole("dialog").getByRole("link", { name: "Đăng ký học thử" })).toBeFocused();
-  await page.keyboard.press("Tab");
-  await expect(page.getByRole("button", { name: "Đóng thông tin chương trình" })).toBeFocused();
-  await page.keyboard.press("Escape");
+  await expect(page.locator(".program-card")).toHaveCount(4);
   await page.locator(".faq-list summary").first().focus();
   await page.keyboard.press("Enter");
   await expect(page.locator(".faq-list details").first()).toHaveAttribute("open", "");

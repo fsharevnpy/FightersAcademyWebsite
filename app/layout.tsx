@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { programs } from "@/content/programs";
+import { siteUrl } from "@/content/contact";
 import { TrialRegistrationProvider } from "@/components/home/trial-registration-provider";
 import "@fontsource/be-vietnam-pro/vietnamese-400.css";
 import "@fontsource/be-vietnam-pro/vietnamese-500.css";
@@ -12,7 +13,7 @@ import "@fontsource/be-vietnam-pro/latin-700.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://stem.fightersacademy.com.vn"),
+  metadataBase: new URL(siteUrl),
   title: "STEM Fighters — Khám phá công nghệ. Tự tay tạo nên sản phẩm.",
   description: `Khám phá bốn chương trình ${programs.map(program => program.name).join(", ")} tại STEM Fighters. Học qua thực hành, thử nghiệm và sáng tạo.`,
   alternates: { canonical: "/" },
