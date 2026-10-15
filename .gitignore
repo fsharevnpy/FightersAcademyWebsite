@@ -10,3 +10,4 @@ playwright-report/
 stem-fighters-leads-*.json
 *.pem
 *.key
+credentials/
