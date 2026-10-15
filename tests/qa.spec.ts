@@ -29,7 +29,10 @@ test("QA: runtime, accessibility, images, layout and performance", async ({ page
     await page.locator(selector).scrollIntoViewIfNeeded();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   }
-  await page.waitForFunction(() => Array.from(document.images).every(image => image.complete && image.naturalWidth > 0));
+  for (const image of await page.locator("img:visible").all()) {
+    await image.scrollIntoViewIfNeeded();
+    await expect.poll(() => image.evaluate(img => img instanceof HTMLImageElement && img.complete && img.naturalWidth > 0)).toBe(true);
+  }
   const images = await page.locator("img").evaluateAll(images => images.filter((img): img is HTMLImageElement => img instanceof HTMLImageElement).map(img => ({ alt: img.alt, src: img.currentSrc, width: img.clientWidth, height: img.clientHeight, loading: img.loading })));
   const metrics = await page.evaluate(() => ({
     ...(window as Window & { qaMetrics?: { cls: number; lcp: number } }).qaMetrics,
@@ -48,7 +51,7 @@ test("QA: runtime, accessibility, images, layout and performance", async ({ page
   expect(await page.locator(".program-card").first().evaluate(el => getComputedStyle(el).transitionDuration)).toBe("0s");
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `test-results/qa-${testInfo.project.name}.png`, fullPage: true });
-  for (const [name, selector] of [["hero", ".hero"], ["programs", "#chuong-trinh"], ["registration", "#dang-ky"], ["footer", "footer"]]) {
+  for (const [name, selector] of [["hero", ".hero"], ["programs", "#chuong-trinh"], ["activities", "#hoat-dong"], ["examples", "section[aria-label='Ví dụ thực hành trong chương trình']"], ["process", "#cach-hoc"], ["registration", "#dang-ky"], ["footer", "footer"]]) {
     await page.locator(selector).screenshot({ path: `test-results/qa-${testInfo.project.name}-${name}.png`, style: ".site-header, .mobile-cta, .skip-link { visibility: hidden !important; }" });
   }
   const violations = findings.flatMap(({ state, result }) => result.violations.map(v => ({ state, rule: v.id, impact: v.impact, nodes: v.nodes.map(node => ({ target: node.target, summary: node.failureSummary })) })));

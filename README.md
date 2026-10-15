@@ -43,11 +43,16 @@ Playwright chạy production server cổng 3100 và kiểm tra mobile 390px, tab
 - `components/home/`: các section riêng của homepage, artwork SVG và dialog chương trình.
 - `content/programs.ts`: dữ liệu bốn chương trình, nội dung giáo trình, học phí từng khóa/chuyên đề, nguồn học phí và FAQ.
 - `content/contact.ts`: hotline, địa chỉ, Google Maps và nội dung CTA/lịch học thử dùng chung.
+- `content/media.ts`: ảnh hoạt động, alt text, caption, điểm crop và đường dẫn ảnh gốc cho các ảnh mới.
 - `lib/leads.ts`: validation và whitelist chương trình dùng chung; `lib/lead-attribution.ts`: UTM của phiên, không lưu dữ liệu lead.
 - `app/api/leads/route.ts`, `lib/server/`: validate request, xác thực Service Account và append qua thư viện chính thức `@googleapis/sheets`.
 - `public/images/`: ảnh tối ưu từ nguồn được cung cấp; bản gốc giữ nguyên trong `source/` và `LogoSTEM.png`.
 
 Font Be Vietnam Pro self-hosted qua package `@fontsource`. Hình minh họa SVG chỉ mô tả khái niệm, không phải ảnh thiết bị thật. Ảnh hoạt động không được gán cho khóa học cụ thể chưa xác nhận.
+
+Gallery “Hoạt động tại STEM Fighters” dùng 6 ảnh, 3 cột trên tablet/desktop và 2 cột trên mobile. Các ảnh là tư liệu hoạt động chung, không đại diện cho một sự kiện duy nhất; tên thư mục gốc `source/workshop/` không phải nhãn sự kiện trên website. Bảy ảnh được chọn từ thư mục này đã chuyển thành WebP (cạnh dài tối đa 1280px, quality 82, bỏ metadata), giữ nguyên bản gốc. `next/image` tiếp tục tối ưu kích thước theo màn hình và tải lazy dưới hero. Không thêm lightbox hoặc nút ảnh giả.
+
+“Học để làm được” dùng ảnh lắp ráp chung, tách biệt với bốn ví dụ lấy từ giáo trình. “Cách học” giữ nguyên bốn bước và dùng lại hai ảnh lớp học/lập trình có sẵn. Giữ nguyên ảnh hero và các card chương trình; không suy diễn ảnh thuộc khóa học nào.
 
 ## Tương tác trong phase này
 
