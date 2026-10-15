@@ -9,9 +9,10 @@ export type Program = {
   audience: string;
   structure: string;
   tags: string[];
-  modules: string[];
+  modules: { name: string; group?: string; sessions?: number; tuition?: number; unit?: "chuyên đề" }[];
   example: { title: string; description: string };
   source: string;
+  tuitionSource: string;
 };
 
 export const programs: Program[] = [
@@ -20,43 +21,92 @@ export const programs: Program[] = [
     description: "Bắt đầu với những bước đi của robot. Từng bước khám phá thế giới và làm quen tư duy thuật toán.",
     audience: "5–7 tuổi · tham khảo", structure: "5 khóa · 60 buổi theo giáo trình",
     tags: ["Robot", "Tư duy thuật toán", "Kéo thả"],
-    modules: ["Khám phá thế giới cùng Rio", "Khám phá mở rộng & tư duy thuật toán", "Lập trình kéo thả cùng Rio", "Rio thông minh – Dò line & né vật cản", "Xưởng sáng tạo thuật toán Rio"],
+    modules: [
+      { name: "Khám phá thế giới cùng Rio", sessions: 12, tuition: 2900000 },
+      { name: "Khám phá mở rộng & tư duy thuật toán", sessions: 12, tuition: 2900000 },
+      { name: "Lập trình kéo thả cùng Rio", sessions: 12, tuition: 3100000 },
+      { name: "Rio thông minh – Dò line & né vật cản", sessions: 12, tuition: 3100000 },
+      { name: "Xưởng sáng tạo thuật toán Rio", sessions: 12, tuition: 3100000 },
+    ],
     example: { title: "Một hành trình cho Rio", description: "Sắp xếp chuỗi lệnh, dự đoán đường đi rồi chạy thử để đưa robot đến đích." },
     source: "Rio_STEM.xlsm",
+    tuitionSource: "source/khoahoc/RIO.jpg",
   },
   {
     id: "starter-kit", number: "02", name: "Starter Kit", category: "CHẾ TẠO & SÁNG TẠO",
     description: "Kết nối lập trình, cảm biến và cơ khí. Biến những ý tưởng gần gũi thành sản phẩm có thể hoạt động.",
     audience: "7–12 tuổi · tùy cấp độ", structure: "6 khóa · 96 buổi theo giáo trình",
     tags: ["Yolo:Bit", "Cảm biến", "Chế tạo"],
-    modules: ["Yolo:Bit – Nhà lập trình nhí", "Sensor Lab – Giác quan của máy", "Smart Home Engineer", "Mechanical Maker – Xưởng cơ khí", "Robotics Engineer", "Inventor Lab – Nhà sáng chế"],
+    modules: [
+      { name: "Yolo:Bit – Nhà lập trình nhí", sessions: 16, tuition: 3200000 },
+      { name: "Sensor Lab – Giác quan của máy", sessions: 16, tuition: 3200000 },
+      { name: "Smart Home Engineer", sessions: 16, tuition: 3200000 },
+      { name: "Mechanical Maker – Xưởng cơ khí", sessions: 16, tuition: 3500000 },
+      { name: "Robotics Engineer", sessions: 16, tuition: 3500000 },
+      { name: "Inventor Lab – Nhà sáng chế", sessions: 16, tuition: 3500000 },
+    ],
     example: { title: "Ngôi nhà biết phản hồi", description: "Kết hợp cảm biến và thiết bị để tạo mô hình nhà có các chức năng tự động." },
     source: "Starter_Kit_STEM_6_khoa_96.xlsx",
+    tuitionSource: "source/khoahoc/Stem Starter Kit.jpg",
   },
   {
     id: "lap-trinh", number: "03", name: "Lập trình", category: "LOGIC & THUẬT TOÁN",
     description: "Nhận ra quy luật, chia nhỏ vấn đề và sắp xếp từng bước. Xây nền tảng tư duy trước khi viết chương trình.",
-    audience: "Độ tuổi: [CẦN BỔ SUNG]", structure: "Nền tảng toán học & tư duy lập trình",
+    audience: "5–7 tuổi · theo giáo trình", structure: "6 khóa · 96 buổi theo giáo trình",
     tags: ["Quy luật", "Logic", "Thuật toán"],
-    modules: ["Nhận biết quy luật", "Quan hệ giữa số và lượng", "Hình học phẳng và tư duy không gian", "Điều kiện, trình tự, suy luận và thuật toán", "Tư duy thuật toán cơ bản", "Logic lập trình & sáng tạo"],
+    modules: [
+      { name: "Phát triển khả năng nhận biết quy luật", group: "Toán tư duy cơ bản · Khóa 1", sessions: 16, tuition: 3500000 },
+      { name: "Hiểu biết quan hệ giữa số và lượng, và tư duy giải toán bằng nhiều cách", group: "Toán tư duy cơ bản · Khóa 2", sessions: 16, tuition: 3500000 },
+      { name: "Hình học phẳng và tư duy không gian", group: "Toán tư duy cơ bản · Khóa 3", sessions: 16, tuition: 3500000 },
+      { name: "Hiểu điều kiện, trình tự, suy luận và thuật toán", group: "Toán tư duy cơ bản · Khóa 4", sessions: 16, tuition: 3500000 },
+      { name: "Tư duy thuật toán cơ bản", group: "Tư duy lập trình · Khóa 1", sessions: 16, tuition: 3500000 },
+      { name: "Logic lập trình & sáng tạo", group: "Tư duy lập trình · Khóa 2", sessions: 16, tuition: 3500000 },
+    ],
     example: { title: "Tìm quy luật, sắp trình tự", description: "Thực hành nhận biết quy luật và suy luận các bước để giải quyết một nhiệm vụ." },
     source: "Lập trình - Chi tiết mục tiêu mỗi khóa.xlsx",
+    tuitionSource: "3.500.000 đồng mỗi khóa, do chủ website xác nhận",
   },
   {
     id: "dien-tu-co-ban", number: "04", name: "Điện tử cơ bản", category: "MẠCH ĐIỆN & KỸ THUẬT",
-    description: "Tìm hiểu cách linh kiện làm việc cùng nhau. Thực hành với mạch điện, đèn LED, công tắc và động cơ.",
-    audience: "Độ tuổi: [CẦN BỔ SUNG]", structure: "Logic · điện cơ bản · robot & cảm biến",
+    description: "Bắt đầu với mạch điện và mô hình đơn giản. Khám phá các cấp độ robot, lập trình nhúng và chuyên đề công nghệ.",
+    audience: "Độ tuổi: [CẦN BỔ SUNG]", structure: "4 nhóm cấp độ · 14 khóa & chuyên đề",
     tags: ["Mạch điện", "LED & motor", "Thực hành"],
-    modules: ["Logic và kỹ thuật cơ bản", "Điện cơ bản, LED và công tắc", "Động cơ và mô hình chuyển động", "Robot và cảm biến cơ bản"],
+    modules: [
+      { name: "Logic và kỹ thuật cơ bản", group: "Kỹ sư nhí tập sự · Khóa 1", tuition: 3500000 },
+      { name: "Robotic và Sensor cơ bản", group: "Kỹ sư nhí tập sự · Khóa 2", tuition: 3800000 },
+      { name: "Khám phá AI Mini", group: "Kỹ sư nhí tập sự · Khóa 2+", tuition: 3800000 },
+      { name: "Robotic Basic", group: "Kỹ sư nhí chính thức · Khóa 1", tuition: 3500000 },
+      { name: "Robotic Intermediate", group: "Kỹ sư nhí chính thức · Khóa 2", tuition: 3800000 },
+      { name: "Robotic Advanced", group: "Kỹ sư nhí chính thức · Khóa 3", tuition: 4100000 },
+      { name: "Lập trình AI Mini", group: "Kỹ sư nhí chính thức · Khóa 3+", tuition: 4100000 },
+      { name: "Lập trình và điện tử (Basic)", group: "Kỹ sư nhí cao cấp · Khóa 1", tuition: 3500000 },
+      { name: "Lập trình và điều khiển robot (Intermediate)", group: "Kỹ sư nhí cao cấp · Khóa 2", tuition: 3800000 },
+      { name: "Lập trình nâng cao (Advanced)", group: "Kỹ sư nhí cao cấp · Khóa 3", tuition: 4100000 },
+      { name: "Lập trình AI Mini", group: "Kỹ sư nhí cao cấp · Khóa 3+", tuition: 4400000 },
+      { name: "IoT với ESP32/STM32", group: "Kỹ sư nhí chuyên sâu", tuition: 3000000, unit: "chuyên đề" },
+      { name: "Robotics Control", group: "Kỹ sư nhí chuyên sâu", tuition: 3300000, unit: "chuyên đề" },
+      { name: "AI – Computer Vision", group: "Kỹ sư nhí chuyên sâu", tuition: 3600000, unit: "chuyên đề" },
+    ],
     example: { title: "Bật đèn bằng công tắc", description: "Lắp mạch điện đơn giản, quan sát LED sáng/tắt và tìm hiểu vai trò của công tắc." },
     source: "Chi tiết mục tiêu mỗi khóa.xlsx",
+    tuitionSource: "source/khoahoc/Điện tử.pdf",
   },
 ];
+
+export const formatTuition = (amount: number) => new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(amount);
+
+export function getTuitionSummary(program: Program) {
+  const amounts = program.modules.flatMap(module => module.tuition === undefined ? [] : [module.tuition]);
+  if (amounts.length !== program.modules.length || amounts.length === 0) return "Học phí đang cập nhật";
+  const lowest = Math.min(...amounts);
+  const unit = program.modules.some(module => module.unit === "chuyên đề") ? "khóa hoặc chuyên đề" : "khóa";
+  return `${amounts.some(amount => amount !== lowest) ? "Từ " : ""}${formatTuition(lowest)} / ${unit}`;
+}
 
 export const faqs = [
   { question: "Con chưa từng học lập trình có thể bắt đầu từ đâu?", answer: "Khóa đầu của Rio không yêu cầu kiến thức trước; trẻ cần có thể nghe và làm theo hướng dẫn 1–2 bước. Starter Kit bắt đầu với việc nhận biết chuỗi lệnh, nút và biểu tượng. Việc lựa chọn chương trình cần dựa trên độ tuổi và khả năng hiện tại của con." },
   { question: "Rio và Starter Kit khác nhau như thế nào?", answer: "Rio sử dụng robot để khám phá, điều khiển đường đi và làm quen thuật toán, với độ tuổi tham khảo 5–7. Starter Kit mở rộng sang lập trình Yolo:Bit, cảm biến, cơ khí và chế tạo sản phẩm; các cấp độ có độ tuổi tham khảo từ 7–12." },
   { question: "Trẻ có sử dụng màn hình trong buổi học không?", answer: "Hai khóa đầu của Rio ưu tiên thẻ lệnh, nút nhấn và hoạt động không màn hình cá nhân. Từ khóa 3, giáo trình giới thiệu lập trình kéo thả theo cặp, xen kẽ hoạt động với robot thật. Starter Kit có lập trình kết hợp thực hành lắp ráp và thử nghiệm." },
   { question: "Con có bắt buộc học Rio trước Starter Kit không?", answer: "Không bắt buộc. Theo giáo trình, đầu vào Starter Kit có thể là hoàn thành Rio hoặc đã nhận biết chuỗi lệnh, nút và biểu tượng. Cấp độ phù hợp cần được xác định theo năng lực của từng trẻ." },
-  { question: "Buổi học thử diễn ra như thế nào?", answer: "Nội dung, lịch, cơ sở tổ chức và chi phí học thử: [CẦN BỔ SUNG]. Website sẽ cập nhật khi có thông tin chính thức." },
+  { question: "Buổi học thử diễn ra như thế nào?", answer: "Nội dung, lịch và chi phí học thử đang được cập nhật. Phụ huynh vui lòng liên hệ hotline trong phần đăng ký học thử để được tư vấn." },
 ];

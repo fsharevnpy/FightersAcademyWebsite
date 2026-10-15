@@ -3,6 +3,9 @@ tunnel: d2dad707-48a8-4e89-98a6-9a27fe352478
 credentials-file: /etc/cloudflared/tunnel.json
 
 ingress:
+  - hostname: stem.fightersacademy.com.vn
+    service: http://website:80
+  # Keep the former domain reachable for the canonical redirect.
   - hostname: fightersacademy.com.vn
     service: http://website:80
   - service: http_status:404

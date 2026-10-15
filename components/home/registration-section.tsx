@@ -1,5 +1,32 @@
-import { ArrowDownRight, CalendarDays, MapPin, Phone } from "lucide-react";
+import { ArrowUpRight, CalendarDays, MapPin, Phone } from "lucide-react";
+import { ButtonLink } from "@/components/ui/button";
+import { contact } from "@/content/contact";
 
 export function RegistrationSection() {
-  return <section id="dang-ky" className="registration-section" aria-labelledby="registration-title"><div className="container"><div className="registration-panel"><div className="registration-copy"><p className="eyebrow"><span aria-hidden="true" />BẮT ĐẦU HÀNH TRÌNH KHÁM PHÁ</p><h2 id="registration-title">Cùng tìm chương trình<br />phù hợp cho con.</h2><p>Một trải nghiệm mới có thể bắt đầu từ một câu hỏi nhỏ.</p><ArrowDownRight className="registration-arrow" size={48} strokeWidth={1.2} aria-hidden="true" /></div><div className="registration-info"><h3>Thông tin đăng ký học thử</h3><p>Lịch học thử và kênh tiếp nhận đăng ký đang được cập nhật.</p><dl><div><dt><CalendarDays size={18} aria-hidden="true" />Lịch & chi phí học thử</dt><dd>[CẦN BỔ SUNG]</dd></div><div><dt><MapPin size={18} aria-hidden="true" />Cơ sở</dt><dd>[CẦN BỔ SUNG]</dd></div><div><dt><Phone size={18} aria-hidden="true" />Hotline đăng ký</dt><dd>[CẦN BỔ SUNG]</dd></div></dl></div></div></div></section>;
+  return <section id="dang-ky" className="registration-section" aria-labelledby="registration-title">
+    <div className="container registration-panel">
+      <div className="registration-copy">
+        <p className="eyebrow"><span aria-hidden="true" />HẸN GẶP TẠI STEM FIGHTERS</p>
+        <h2 id="registration-title">Cùng tìm chương trình<br />phù hợp cho con.</h2>
+        <p>Liên hệ để được tư vấn chương trình và thông tin học thử cho con.</p>
+        <div className="registration-hotline">
+          <span>Hotline tư vấn & đăng ký</span>
+          <a href={contact.phoneHref}><Phone size={26} strokeWidth={1.6} aria-hidden="true" />{contact.phone}</a>
+        </div>
+        <ButtonLink href={contact.phoneHref}><Phone size={18} aria-hidden="true" />Gọi tư vấn</ButtonLink>
+      </div>
+      <div className="registration-info">
+        <h3>Thông tin đăng ký học thử</h3>
+        <div className="registration-address">
+          <MapPin size={24} strokeWidth={1.6} aria-hidden="true" />
+          <div>
+            <p className="contact-label">Địa chỉ</p>
+            <address>{contact.addressLines.map(line => <span key={line}>{line}</span>)}</address>
+            <ButtonLink href={contact.mapsHref} target="_blank" rel="noopener noreferrer" variant="tertiary">Chỉ đường Google Maps<ArrowUpRight size={18} aria-hidden="true" /></ButtonLink>
+          </div>
+        </div>
+        <div className="registration-schedule"><CalendarDays size={20} aria-hidden="true" /><p>Lịch và chi phí học thử đang được cập nhật. Vui lòng liên hệ để được tư vấn.</p></div>
+      </div>
+    </div>
+  </section>;
 }

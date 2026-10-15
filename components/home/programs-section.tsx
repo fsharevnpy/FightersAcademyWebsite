@@ -1,5 +1,5 @@
 import { ArrowRight, Users, Layers3 } from "lucide-react";
-import { programs } from "@/content/programs";
+import { formatTuition, getTuitionSummary, programs } from "@/content/programs";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { ButtonLink } from "@/components/ui/button";
 import { ProgramArt } from "./program-art";
@@ -28,14 +28,19 @@ export function ProgramsSection() {
                 <span><Users size={15} aria-hidden="true" />{program.audience}</span>
                 <span><Layers3 size={15} aria-hidden="true" />{program.structure}</span>
               </div>
+              <div className="program-tuition"><span>Học phí</span><strong>{getTuitionSummary(program)}</strong></div>
               <div className="program-card-bottom">
                 <div className="tags">{program.tags.map(tag => <span key={tag}>{tag}</span>)}</div>
                 <ProgramDialog name={program.name} number={program.number}>
                   <p className="dialog-description">{program.description}</p>
                   <div className="dialog-facts"><span>{program.audience}</span><span>{program.structure}</span></div>
-                  <h3>Nội dung trong giáo trình</h3>
-                  <ol className="module-list">{program.modules.map((module, index) => <li key={module}><span>{String(index + 1).padStart(2, "0")}</span>{module}</li>)}</ol>
-                  <p className="dialog-notice">Lịch mở lớp, học phí và cơ sở: [CẦN BỔ SUNG]. Nội dung trên là tóm tắt giáo trình, không phải lịch tuyển sinh.</p>
+                  <h3>Các khóa học & học phí</h3>
+                  <ol className="module-list">{program.modules.map((module, index) => <li key={`${module.group ?? ""}-${module.name}`}>
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <div className="module-content">{module.group && <span className="module-group">{module.group}</span>}<strong>{module.name}</strong>{module.sessions && <span className="module-sessions">{module.sessions} buổi / khóa</span>}</div>
+                    {module.tuition !== undefined && <span className="module-tuition">{formatTuition(module.tuition)}<small>/ {module.unit ?? "khóa"}</small></span>}
+                  </li>)}</ol>
+                  <p className="dialog-notice">Học phí tính cho từng khóa hoặc chuyên đề, không phải toàn bộ lộ trình. Lịch mở lớp đang được cập nhật; vui lòng liên hệ để chọn cấp độ phù hợp và được tư vấn về lịch học, thiết bị, học liệu đi kèm.</p>
                   <ButtonLink href="#dang-ky">Tìm hiểu học thử <ArrowRight size={18} aria-hidden="true" /></ButtonLink>
                 </ProgramDialog>
               </div>

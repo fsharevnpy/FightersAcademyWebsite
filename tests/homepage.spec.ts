@@ -1,5 +1,32 @@
 import { expect, test } from "@playwright/test";
 
+test("program tuition matches supplied tables and programming course fees", async ({ page }) => {
+  await page.goto("/");
+  const expectedPrograms = [
+    { name: "Rio", summary: "Từ 2.900.000", prices: ["2.900.000", "2.900.000", "3.100.000", "3.100.000", "3.100.000"], sessions: "12 buổi / khóa" },
+    { name: "Starter Kit", summary: "Từ 3.200.000", prices: ["3.200.000", "3.200.000", "3.200.000", "3.500.000", "3.500.000", "3.500.000"], sessions: "16 buổi / khóa" },
+    { name: "Lập trình", summary: "3.500.000", prices: Array(6).fill("3.500.000"), sessions: "16 buổi / khóa" },
+    { name: "Điện tử cơ bản", summary: "Từ 3.000.000", prices: ["3.500.000", "3.800.000", "3.800.000", "3.500.000", "3.800.000", "4.100.000", "4.100.000", "3.500.000", "3.800.000", "4.100.000", "4.400.000", "3.000.000", "3.300.000", "3.600.000"], sessions: null },
+  ];
+  for (const program of expectedPrograms) {
+    const card = page.locator(".program-card").filter({ has: page.getByRole("heading", { name: program.name, exact: true }) });
+    await expect(card.locator(".program-tuition")).toContainText(program.summary);
+    await card.getByRole("button", { name: `Khám phá chương trình ${program.name}`, exact: true }).click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog.locator(".module-tuition")).toHaveCount(program.prices.length);
+    await expect(dialog.locator(".module-tuition")).toContainText(program.prices);
+    await expect(dialog.locator(".module-sessions")).toHaveCount(program.sessions ? program.prices.length : 0);
+    if (program.sessions) await expect(dialog.locator(".module-sessions")).toHaveText(program.prices.map(() => program.sessions!));
+    if (program.name === "Điện tử cơ bản") {
+      await expect(dialog.locator(".module-tuition small").filter({ hasText: "/ chuyên đề" })).toHaveCount(3);
+      await expect(dialog.locator(".module-group").filter({ hasText: "Khóa 2+" })).toHaveCount(1);
+      await expect(dialog.locator(".module-group").filter({ hasText: "Khóa 3+" })).toHaveCount(2);
+    }
+    expect(await dialog.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
+    await page.keyboard.press("Escape");
+  }
+});
+
 test("homepage loads all four programs without overflow or broken images", async ({ page }, testInfo) => {
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
@@ -44,7 +71,7 @@ test("each program opens its own curriculum and closes accessibly", async ({ pag
   }
 });
 
-test("FAQ reveals answers and the trial CTA reaches honest pending information", async ({ page }) => {
+test("FAQ reveals answers and the trial CTA reaches contact information", async ({ page }) => {
   await page.goto("/");
   const question = page.getByText("Con chưa từng học lập trình có thể bắt đầu từ đâu?", { exact: true });
   await question.click();
@@ -52,7 +79,20 @@ test("FAQ reveals answers and the trial CTA reaches honest pending information",
   await page.locator("#hero-actions").getByRole("link", { name: "Đăng ký học thử" }).click();
   await expect(page).toHaveURL(/#dang-ky$/);
   await expect(page.getByRole("heading", { name: "Thông tin đăng ký học thử" })).toBeInViewport();
-  await expect(page.locator("#dang-ky")).toContainText("[CẦN BỔ SUNG]");
+  const registration = page.locator("#dang-ky");
+  await expect(registration).not.toContainText("[CẦN BỔ SUNG]");
+  await expect(registration).toContainText("Lịch và chi phí học thử đang được cập nhật");
+  await expect(registration.getByRole("link", { name: "Gọi tư vấn", exact: true })).toHaveAttribute("href", "tel:0398288830");
+  for (const section of [registration, page.locator("footer")]) {
+    await expect(section.getByRole("link", { name: "0398 288 830", exact: true })).toHaveAttribute("href", "tel:0398288830");
+    const mapsLink = section.locator('a[href^="https://www.google.com/maps/search/"]');
+    await expect(mapsLink).toHaveAttribute("target", "_blank");
+    await expect(mapsLink).toHaveAttribute("rel", "noopener noreferrer");
+    const mapsUrl = new URL((await mapsLink.getAttribute("href"))!);
+    expect(mapsUrl.searchParams.get("query")).toBe("Tầng 1, 64 đường số 2, Khu đô thị Vạn Phúc, Phường Hiệp Bình, TP. Hồ Chí Minh");
+    await expect(section).toContainText("Tầng 1, 64 đường số 2");
+    await expect(section).toContainText("Phường Hiệp Bình, TP. Hồ Chí Minh");
+  }
   await expect(page.locator("form")).toHaveCount(0);
 });
 
