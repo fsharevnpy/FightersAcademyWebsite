@@ -46,11 +46,11 @@ export function ProgramDialog({ name, number, children }: Props) {
   return <>
     <Button
       variant="tertiary"
-      aria-label={`Khám phá chương trình ${name}`}
+      aria-label={`Xem chi tiết chương trình ${name}`}
       aria-haspopup="dialog"
       aria-controls={dialogId}
       onClick={() => { dialog.current?.showModal(); setOpen(true); }}
-    >Khám phá <ArrowUpRight size={18} aria-hidden="true" /></Button>
+    >Xem chi tiết <ArrowUpRight size={18} aria-hidden="true" /></Button>
     <dialog
       ref={dialog}
       id={dialogId}

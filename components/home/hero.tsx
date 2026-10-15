@@ -1,6 +1,7 @@
 import Image from "next/image";
-import { ArrowDown, ArrowUpRight, CircuitBoard, Code2, Lightbulb } from "lucide-react";
+import { ArrowDown, CircuitBoard, Code2, Lightbulb } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
+import { TrialCTA } from "@/components/ui/trial-cta";
 
 export function Hero() {
   return <section className="hero" aria-labelledby="hero-title">
@@ -10,7 +11,7 @@ export function Hero() {
         <h1 id="hero-title">Khám phá{" "}<br />công nghệ.<br /><span>Tự tay tạo nên<br className="desktop-break" /> <span className="whitespace-nowrap">sản phẩm.</span></span></h1>
         <p className="hero-description">Một ý tưởng nhỏ. Một bước thử mới.<br />Cùng con khám phá robot, lập trình và chế tạo qua những trải nghiệm STEM thực tế.</p>
         <div id="hero-actions" className="hero-actions">
-          <ButtonLink href="#dang-ky">Đăng ký học thử <ArrowUpRight size={19} aria-hidden="true" /></ButtonLink>
+          <TrialCTA />
           <ButtonLink href="#chuong-trinh" variant="secondary">Khám phá khóa học <ArrowDown size={17} aria-hidden="true" /></ButtonLink>
         </div>
         <div className="hero-footnote"><span className="small-spark" aria-hidden="true">✳</span><span>Học qua thực hành. Trưởng thành qua mỗi lần thử.</span></div>

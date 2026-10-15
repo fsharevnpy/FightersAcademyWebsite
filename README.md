@@ -36,7 +36,7 @@ Playwright chạy production server cổng 3100 và kiểm tra mobile 390px, tab
 - `components/layout/`: header, footer, mobile CTA.
 - `components/home/`: các section riêng của homepage, artwork SVG và dialog chương trình.
 - `content/programs.ts`: dữ liệu bốn chương trình, nội dung giáo trình, học phí từng khóa/chuyên đề, nguồn học phí và FAQ.
-- `content/contact.ts`: hotline, địa chỉ và liên kết Google Maps dùng chung cho đăng ký và chân trang.
+- `content/contact.ts`: hotline, địa chỉ, Google Maps và nội dung CTA/lịch học thử dùng chung.
 - `public/images/`: ảnh tối ưu từ nguồn được cung cấp; bản gốc giữ nguyên trong `source/` và `LogoSTEM.png`.
 
 Font Be Vietnam Pro self-hosted qua package `@fontsource`. Hình minh họa SVG chỉ mô tả khái niệm, không phải ảnh thiết bị thật. Ảnh hoạt động không được gán cho khóa học cụ thể chưa xác nhận.
@@ -44,10 +44,14 @@ Font Be Vietnam Pro self-hosted qua package `@fontsource`. Hình minh họa SVG 
 ## Tương tác trong phase này
 
 - Navbar sử dụng anchor trong homepage, không dẫn tới trang chưa làm.
-- Nút khám phá mở dialog tóm tắt riêng cho từng chương trình.
-- CTA học thử đi đến khối liên hệ với nút gọi hotline và chỉ đường Google Maps. Chưa thu dữ liệu, chưa có form gửi và không giả thông báo thành công.
+- Bốn card ngang hàng hiển thị độ tuổi, mô tả, hướng khám phá, kỹ năng, số khóa và học phí. Nút “Xem chi tiết” mở dialog curriculum hiện có; không tạo trang mới.
+- `content/programs.ts` là nguồn dữ liệu khóa học: số khóa, tổng số buổi và học phí tóm tắt được tính từ `modules`. Giữ đầy đủ curriculum và `id` làm slug cho `/khoa-hoc/[slug]` ở phase sau.
+- CTA “Đăng ký học thử” dùng chung `TrialCTA`, gọi trực tiếp hotline qua `tel:`; khối liên hệ vẫn có địa chỉ và Google Maps. Chưa thu dữ liệu, chưa có form gửi và không giả thông báo thành công.
+- Số điện thoại được ghi rõ “Gọi điện”; “Chat Zalo” là lựa chọn riêng ở khối liên hệ và chân trang, mở `contact.zaloHref` trong tab mới (ứng dụng hoặc web tùy thiết bị). Zalo là CTA phụ, không thay đích gọi hotline của CTA học thử.
+- Bản đồ Google Maps nhỏ tại khối liên hệ dùng chung địa chỉ với link chỉ đường, tải lazy qua iframe. Click hoặc dùng bàn phím trên bản đồ mở Google Maps ở tab mới; bản đồ nằm cạnh địa chỉ trên desktop và bên dưới ở màn hình hẹp. Cần kết nối tới Google để tải bản đồ; link chỉ đường vẫn dùng được nếu embed bị chặn.
+- Để tích hợp sau này, truyền `TrialRegistrationForm` qua `children` của `RegistrationSection`, rồi đổi đích `trialContact.href` sang `#dang-ky`. Section giữ nguyên khung và thông tin liên hệ; không có Supabase hoặc form giả ở phase hiện tại.
 - Học phí Rio và Starter Kit theo ảnh trong `source/khoahoc/`; Điện tử theo hai trang PDF cùng thư mục. Lập trình có 6 khóa, mỗi khóa 16 buổi theo Excel và giá 3.500.000 đồng/khóa do chủ website xác nhận. Giá hiển thị theo từng khóa/chuyên đề, không phải tổng lộ trình.
-- Lịch mở lớp và chi phí học thử chưa xác định được ghi đang cập nhật; độ tuổi Điện tử còn thiếu được ghi `[CẦN BỔ SUNG]`. Không tự suy đoán số buổi Điện tử hoặc chi phí thiết bị/học liệu. Hotline và địa chỉ đã được cung cấp; email chưa có nên chưa hiển thị.
+- Điện tử cơ bản dành cho học viên 7–15 tuổi, theo xác nhận của chủ website. Lịch học thử dùng wording “Liên hệ STEM Fighters để được tư vấn lịch học thử phù hợp.” Dữ liệu học phí chưa đủ sẽ được ẩn; không hiện placeholder. Không tự suy đoán số buổi Điện tử, lịch học, chi phí học thử hoặc thiết bị/học liệu. Hotline và địa chỉ đã được cung cấp; email chưa có nên chưa hiển thị.
 - Lịch trình và sản phẩm trong giáo trình không được trình bày như lịch tuyển sinh hoặc thành tích học viên.
 
 ## Deploy production: Docker + Cloudflare Tunnel

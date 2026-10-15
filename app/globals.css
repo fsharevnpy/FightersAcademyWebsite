@@ -106,7 +106,7 @@
   .hero-bottom strong { font-weight: 600; color: var(--color-navy); }
   .hero-bottom > span { display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 13px; color: #435570; }
   .hero-bottom svg { color: #3779c4; width: 21px; stroke-width: 1.5; }
-  .program-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+  .program-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 24px; }
   .program-card { display: flex; flex-direction: column; background: white; border: 1px solid var(--color-line); border-radius: 16px; padding: 27px 28px 18px; transition: border-color .18s, transform .18s, box-shadow .18s; overflow: hidden; }
   .program-card:hover { border-color: #94baf0; transform: translateY(-2px); box-shadow: 0 8px 28px #0b1f4b06; }
   .program-card-top { display: flex; align-items: center; justify-content: space-between; }
@@ -115,8 +115,9 @@
   .program-card-main { flex: 1; display: grid; grid-template-columns: 1.3fr 1fr; gap: 10px; align-items: center; margin-top: 15px; }
   .program-card h3 { font-size: 27px; margin-bottom: 12px; letter-spacing: -.8px; }
   .program-card-main p { font-size: 16px; line-height: 1.85; color: var(--color-muted); }
+  .program-age { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 14px; color: var(--color-muted); }
   .program-art { width: 100%; height: auto; color: var(--color-brand); }
-  .program-facts { display: flex; flex-direction: column; gap: 7px; margin-top: 22px; padding-bottom: 20px; font-size: 14px; color: #526176; }
+  .program-facts { display: flex; flex-direction: column; gap: 12px; margin-top: 22px; padding-bottom: 20px; font-size: 14px; color: #526176; }
   .program-facts > span { display: flex; gap: 8px; align-items: center; }
   .program-facts svg { color: #788ea9; }
   .program-tuition { display: flex; flex-direction: column; gap: 4px; border-top: 1px solid var(--color-line); padding-block: 16px; }
@@ -211,9 +212,17 @@
   .registration-hotline > span { display: block; font-size: 13px; color: var(--color-muted); margin-bottom: 4px; }
   .registration-hotline a { display: inline-flex; align-items: center; gap: 12px; min-height: 48px; font-size: 32px; line-height: 1.4; font-weight: 700; color: var(--color-brand); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .registration-hotline a:hover { color: var(--color-brand-hover); }
+  .registration-contact-options { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px; }
   .registration-info { min-width: 0; padding-left: 40px; border-left: 1px solid #c5d9f1; }
   .registration-info h3 { font-size: 20px; letter-spacing: 0; }
-  .registration-address { display: flex; align-items: flex-start; gap: 14px; margin-top: 24px; }
+  .registration-location { display: grid; grid-template-columns: minmax(0, 1fr) 176px; gap: 20px; align-items: start; margin-top: 24px; }
+  .registration-address { display: flex; align-items: flex-start; gap: 14px; }
+  .contact-map { position: relative; min-width: 0; height: 192px; border: 1px solid #c5d9f1; border-radius: 12px; background: var(--color-surface); }
+  .contact-map iframe { width: 100%; height: 100%; border: 0; border-radius: inherit; pointer-events: none; }
+  .contact-map > a { position: absolute; inset: 0; display: flex; justify-content: center; align-items: flex-start; padding: 10px; border-radius: inherit; }
+  .contact-map > a > span { display: inline-flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 6px; background: white; color: var(--color-brand); font-size: 12px; font-weight: 600; box-shadow: 0 2px 8px #0b1f4b18; }
+  .contact-map > a:hover > span { color: var(--color-brand-pressed); text-decoration: underline; text-underline-offset: 3px; }
+  .contact-map > a:active > span { background: var(--color-surface-brand); }
   .registration-address > svg { color: var(--color-brand); margin-top: 3px; }
   .registration-address > div { min-width: 0; }
   .contact-label { font-size: 13px; color: var(--color-muted); margin-bottom: 6px; }
@@ -243,6 +252,7 @@
 
 @media (min-width: 1440px) { .hero-grid { padding-top: 80px; padding-bottom: 80px; } }
 @media (max-width: 1199px) {
+  .registration-location { grid-template-columns: minmax(0, 1fr); }
   .desktop-nav { gap: 18px; }
   .desktop-nav a { font-size: 14px; }
   .brand-wordmark { font-size: 18px; }
@@ -377,7 +387,8 @@
   .registration-copy h2 { font-size: 27px; }
   .registration-copy .eyebrow { font-size: 10px; letter-spacing: 0; }
   .registration-copy > p:not(.eyebrow) { font-size: 15px; }
-  .registration-copy > .button { width: 100%; }
+  .registration-contact-options { flex-direction: column; align-items: stretch; }
+  .registration-action > .button { width: 100%; }
   .registration-hotline a { font-size: 28px; }
   .registration-info { padding: 28px 0 0; border-left: 0; border-top: 1px solid #c5d9f1; }
   .registration-info h3 { font-size: 18px; }

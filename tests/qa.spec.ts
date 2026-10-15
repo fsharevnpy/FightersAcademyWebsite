@@ -35,7 +35,7 @@ test("QA: runtime, accessibility, images, layout and performance", async ({ page
     ...(window as Window & { qaMetrics?: { cls: number; lcp: number } }).qaMetrics,
     scripts: performance.getEntriesByType("resource").filter(entry => (entry as PerformanceResourceTiming).initiatorType === "script").map(entry => ({ url: entry.name, bytes: (entry as PerformanceResourceTiming).encodedBodySize })),
   }));
-  await page.getByRole("button", { name: "Khám phá chương trình Rio", exact: true }).click();
+  await page.getByRole("button", { name: "Xem chi tiết chương trình Rio", exact: true }).click();
   findings.push({ state: "dialog", result: await new AxeBuilder({ page }).options({ rules: { "label-content-name-mismatch": { enabled: true } } }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze() });
   await page.keyboard.press("Escape");
   if (testInfo.project.name !== "desktop") {
@@ -48,7 +48,7 @@ test("QA: runtime, accessibility, images, layout and performance", async ({ page
   expect(await page.locator(".program-card").first().evaluate(el => getComputedStyle(el).transitionDuration)).toBe("0s");
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `test-results/qa-${testInfo.project.name}.png`, fullPage: true });
-  for (const [name, selector] of [["hero", ".hero"], ["programs", "#chuong-trinh"], ["footer", "footer"]]) {
+  for (const [name, selector] of [["hero", ".hero"], ["programs", "#chuong-trinh"], ["registration", "#dang-ky"], ["footer", "footer"]]) {
     await page.locator(selector).screenshot({ path: `test-results/qa-${testInfo.project.name}-${name}.png`, style: ".site-header, .mobile-cta, .skip-link { visibility: hidden !important; }" });
   }
   const violations = findings.flatMap(({ state, result }) => result.violations.map(v => ({ state, rule: v.id, impact: v.impact, nodes: v.nodes.map(node => ({ target: node.target, summary: node.failureSummary })) })));
@@ -64,7 +64,7 @@ test("QA: keyboard navigation, focus containment and hover", async ({ page }) =>
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Chuyển đến nội dung chính" })).toBeFocused();
   await page.keyboard.press("Enter");
-  const trigger = page.getByRole("button", { name: "Khám phá chương trình Starter Kit", exact: true });
+  const trigger = page.getByRole("button", { name: "Xem chi tiết chương trình Starter Kit", exact: true });
   await trigger.focus();
   expect(await trigger.evaluate(el => getComputedStyle(el).outlineStyle)).toBe("solid");
   await page.keyboard.press("Enter");
@@ -75,10 +75,25 @@ test("QA: keyboard navigation, focus containment and hover", async ({ page }) =>
   }
   await page.keyboard.press("Escape");
   await expect(trigger).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Tab");
+  await expect(trigger).toBeFocused();
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Shift+Tab");
+  await expect(page.getByRole("dialog").getByRole("link", { name: "Đăng ký học thử" })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: "Đóng thông tin chương trình" })).toBeFocused();
+  await page.keyboard.press("Escape");
   await page.locator(".faq-list summary").first().focus();
   await page.keyboard.press("Enter");
   await expect(page.locator(".faq-list details").first()).toHaveAttribute("open", "");
   const button = page.locator("#hero-actions .button--primary");
   await button.hover();
   expect(await button.evaluate(el => getComputedStyle(el).backgroundColor)).toBe("rgb(6, 75, 194)");
+  await button.focus();
+  expect(await button.evaluate(el => getComputedStyle(el).outlineStyle)).toBe("solid");
+  await page.mouse.down();
+  expect(await button.evaluate(el => getComputedStyle(el).backgroundColor)).toBe("rgb(4, 59, 155)");
+  await page.mouse.move(0, 0);
+  await page.mouse.up();
 });

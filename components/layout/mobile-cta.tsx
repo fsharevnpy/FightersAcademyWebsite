@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowUpRight } from "lucide-react";
-import { ButtonLink } from "@/components/ui/button";
+import { TrialCTA } from "@/components/ui/trial-cta";
 
 export function MobileCTA() {
   const [visible, setVisible] = useState(false);
@@ -23,5 +22,5 @@ export function MobileCTA() {
     [hero, registration, footer].forEach(node => observer.observe(node));
     return () => observer.disconnect();
   }, []);
-  return visible ? <div className="mobile-cta"><ButtonLink href="#dang-ky">Đăng ký học thử <ArrowUpRight size={18} aria-hidden="true" /></ButtonLink></div> : null;
+  return visible ? <div className="mobile-cta"><TrialCTA /></div> : null;
 }

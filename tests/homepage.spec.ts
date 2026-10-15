@@ -1,4 +1,18 @@
 import { expect, test } from "@playwright/test";
+import { getProgramCourseCount, getProgramStructure, getTuitionSummary, programs } from "../content/programs";
+
+test("course summaries derive from curriculum and omit unavailable fees", () => {
+  expect(programs.map(getProgramCourseCount)).toEqual(["5 khóa", "6 khóa", "6 khóa", "14 khóa & chuyên đề"]);
+  expect(programs.map(getProgramStructure)).toEqual([
+    "5 khóa · 60 buổi theo giáo trình",
+    "6 khóa · 96 buổi theo giáo trình",
+    "6 khóa · 96 buổi theo giáo trình",
+    "4 nhóm cấp độ · 14 khóa & chuyên đề",
+  ]);
+  expect(getTuitionSummary({ ...programs[0], modules: [] })).toBeNull();
+  expect(getTuitionSummary({ ...programs[0], modules: [{ name: "Unknown fee" }] })).toBeNull();
+  expect(getTuitionSummary({ ...programs[0], modules: [...programs[0].modules, { name: "Unknown fee" }] })).toBeNull();
+});
 
 test("program tuition matches supplied tables and programming course fees", async ({ page }) => {
   await page.goto("/");
@@ -11,7 +25,7 @@ test("program tuition matches supplied tables and programming course fees", asyn
   for (const program of expectedPrograms) {
     const card = page.locator(".program-card").filter({ has: page.getByRole("heading", { name: program.name, exact: true }) });
     await expect(card.locator(".program-tuition")).toContainText(program.summary);
-    await card.getByRole("button", { name: `Khám phá chương trình ${program.name}`, exact: true }).click();
+    await card.getByRole("button", { name: `Xem chi tiết chương trình ${program.name}`, exact: true }).click();
     const dialog = page.getByRole("dialog");
     await expect(dialog.locator(".module-tuition")).toHaveCount(program.prices.length);
     await expect(dialog.locator(".module-tuition")).toContainText(program.prices);
@@ -38,6 +52,10 @@ test("homepage loads all four programs without overflow or broken images", async
     await expect(page.locator(".program-card").getByRole("heading", { name, exact: true })).toBeVisible();
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  for (const image of await page.locator("img:visible").all()) {
+    await image.scrollIntoViewIfNeeded();
+    await expect.poll(() => image.evaluate(img => img instanceof HTMLImageElement && img.complete && img.naturalWidth > 0)).toBe(true);
+  }
   await page.locator("footer").scrollIntoViewIfNeeded();
   await page.waitForFunction(() => Array.from(document.images).every(image => image.complete && image.naturalWidth > 0));
   expect(errors).toEqual([]);
@@ -50,7 +68,7 @@ test("homepage loads all four programs without overflow or broken images", async
 test("layout fits small phones, tablet and desktop", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Viewport sweep uses the desktop browser");
   await page.goto("/");
-  for (const width of [320, 375, 768, 1024, 1440]) {
+  for (const width of [320, 375, 390, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `Overflow at ${width}px`).toBe(true);
   }
@@ -59,7 +77,7 @@ test("layout fits small phones, tablet and desktop", async ({ page }, testInfo) 
 test("each program opens its own curriculum and closes accessibly", async ({ page }) => {
   await page.goto("/");
   for (const name of ["Rio", "Starter Kit", "Lập trình", "Điện tử cơ bản"]) {
-    const trigger = page.getByRole("button", { name: `Khám phá chương trình ${name}`, exact: true });
+    const trigger = page.getByRole("button", { name: `Xem chi tiết chương trình ${name}`, exact: true });
     await trigger.click();
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
@@ -71,29 +89,131 @@ test("each program opens its own curriculum and closes accessibly", async ({ pag
   }
 });
 
-test("FAQ reveals answers and the trial CTA reaches contact information", async ({ page }) => {
+test("FAQ reveals answers and trial CTAs use the real hotline", async ({ page }) => {
   await page.goto("/");
   const question = page.getByText("Con chưa từng học lập trình có thể bắt đầu từ đâu?", { exact: true });
   await question.click();
   await expect(page.locator("details[open]")).toContainText("Không yêu cầu kiến thức trước", { ignoreCase: true });
-  await page.locator("#hero-actions").getByRole("link", { name: "Đăng ký học thử" }).click();
-  await expect(page).toHaveURL(/#dang-ky$/);
+  await expect(page.locator("#hero-actions").getByRole("link", { name: "Đăng ký học thử" })).toHaveAttribute("href", "tel:0398288830");
+  await page.locator("#dang-ky").scrollIntoViewIfNeeded();
   await expect(page.getByRole("heading", { name: "Thông tin đăng ký học thử" })).toBeInViewport();
   const registration = page.locator("#dang-ky");
   await expect(registration).not.toContainText("[CẦN BỔ SUNG]");
-  await expect(registration).toContainText("Lịch và chi phí học thử đang được cập nhật");
-  await expect(registration.getByRole("link", { name: "Gọi tư vấn", exact: true })).toHaveAttribute("href", "tel:0398288830");
+  await expect(registration).toContainText("Liên hệ STEM Fighters để được tư vấn lịch học thử phù hợp.");
+  await expect(registration.getByRole("link", { name: "Đăng ký học thử", exact: true })).toHaveAttribute("href", "tel:0398288830");
   for (const section of [registration, page.locator("footer")]) {
-    await expect(section.getByRole("link", { name: "0398 288 830", exact: true })).toHaveAttribute("href", "tel:0398288830");
-    const mapsLink = section.locator('a[href^="https://www.google.com/maps/search/"]');
+    await expect(section.getByRole("link", { name: "Gọi điện: 0398 288 830", exact: true })).toHaveAttribute("href", "tel:0398288830");
+    const mapsLink = section.locator('a[href^="https://www.google.com/maps/search/"]').first();
     await expect(mapsLink).toHaveAttribute("target", "_blank");
     await expect(mapsLink).toHaveAttribute("rel", "noopener noreferrer");
     const mapsUrl = new URL((await mapsLink.getAttribute("href"))!);
-    expect(mapsUrl.searchParams.get("query")).toBe("Tầng 1, 64 đường số 2, Khu đô thị Vạn Phúc, Phường Hiệp Bình, TP. Hồ Chí Minh");
+    expect(mapsUrl.searchParams.get("query")).toBe("64 đường số 2, Khu đô thị Vạn Phúc, Phường Hiệp Bình, TP. Hồ Chí Minh");
     await expect(section).toContainText("Tầng 1, 64 đường số 2");
     await expect(section).toContainText("Phường Hiệp Bình, TP. Hồ Chí Minh");
   }
   await expect(page.locator("form")).toHaveCount(0);
+});
+
+test("phone calls and Zalo chat remain separate contact actions", async ({ page }) => {
+  await page.context().route("https://zalo.me/0398288830", route => route.fulfill({
+    status: 200, contentType: "text/html", body: "<title>Zalo destination</title>",
+  }));
+  await page.goto("/");
+  for (const section of [page.locator("#dang-ky"), page.locator("footer")]) {
+    await section.scrollIntoViewIfNeeded();
+    await expect(section.getByRole("link", { name: "Gọi điện: 0398 288 830", exact: true })).toHaveAttribute("href", "tel:0398288830");
+    const chat = section.getByRole("link", { name: "Chat Zalo", exact: true });
+    await expect(chat).toHaveAttribute("href", "https://zalo.me/0398288830");
+    await expect(chat).toHaveAttribute("target", "_blank");
+    await expect(chat).toHaveAttribute("rel", "noopener noreferrer");
+    await chat.focus();
+    expect(await chat.evaluate(link => getComputedStyle(link).outlineStyle)).toBe("solid");
+    const [popup] = await Promise.all([page.waitForEvent("popup"), page.keyboard.press("Enter")]);
+    await expect(popup).toHaveURL("https://zalo.me/0398288830");
+    await popup.close();
+  }
+  await expect(page.locator("#dang-ky").getByRole("link", { name: "Chat Zalo" })).toHaveClass(/button--secondary/);
+  await expect(page.locator("#dang-ky").getByRole("link", { name: "Đăng ký học thử" })).toHaveAttribute("href", "tel:0398288830");
+});
+
+test("contact map uses the shared address and opens Google Maps accessibly", async ({ page }) => {
+  await page.goto("/");
+  const map = page.locator(".contact-map");
+  await map.scrollIntoViewIfNeeded();
+  const frame = map.locator("iframe");
+  const mapLink = map.getByRole("link", { name: "Mở Google Maps: địa chỉ STEM Fighters (tab mới)" });
+  await expect(frame).toHaveAttribute("loading", "lazy");
+  await expect(frame).toHaveAttribute("inert", "");
+  const embedUrl = new URL((await frame.getAttribute("src"))!);
+  const mapsUrl = new URL((await mapLink.getAttribute("href"))!);
+  expect(embedUrl.origin).toBe("https://www.google.com");
+  expect(embedUrl.searchParams.get("output")).toBe("embed");
+  expect(embedUrl.searchParams.get("q")).toBe(mapsUrl.searchParams.get("query"));
+  await expect(mapLink).toHaveAttribute("target", "_blank");
+  await expect(mapLink).toHaveAttribute("rel", "noopener noreferrer");
+  await page.locator(".registration-address a").focus();
+  await page.keyboard.press("Tab");
+  await expect(mapLink).toBeFocused();
+  expect(await mapLink.evaluate(link => getComputedStyle(link).outlineStyle)).toBe("solid");
+  await page.context().route("https://www.google.com/maps/search/**", route => route.fulfill({
+    status: 200, contentType: "text/html", body: "<title>Google Maps destination</title>",
+  }));
+  const [popup] = await Promise.all([page.waitForEvent("popup"), mapLink.click()]);
+  await expect(popup).toHaveURL(mapsUrl.href);
+  await popup.close();
+  const addressBounds = await page.locator(".registration-address").boundingBox();
+  const mapBounds = await map.boundingBox();
+  expect(addressBounds).not.toBeNull();
+  expect(mapBounds).not.toBeNull();
+  if (page.viewportSize()!.width >= 1200) {
+    expect(mapBounds!.x).toBeGreaterThanOrEqual(addressBounds!.x + addressBounds!.width);
+  } else {
+    expect(mapBounds!.y).toBeGreaterThanOrEqual(addressBounds!.y + addressBounds!.height);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+});
+
+test("four equal-weight cards keep facts consistent without exposing curriculum or placeholders", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => document.fonts.ready);
+  const cards = page.locator(".program-card");
+  const sizes = await cards.evaluateAll(elements => elements.map(element => {
+    const rect = element.getBoundingClientRect();
+    const style = getComputedStyle(element);
+    return { width: rect.width, height: rect.height, background: style.backgroundColor, border: style.border, padding: style.padding };
+  }));
+  for (const size of sizes) {
+    expect(Math.abs(size.width - sizes[0].width)).toBeLessThanOrEqual(1);
+    expect(Math.abs(size.height - sizes[0].height)).toBeLessThanOrEqual(1);
+    expect(size.background).toBe(sizes[0].background);
+    expect(size.border).toBe(sizes[0].border);
+    expect(size.padding).toBe(sizes[0].padding);
+  }
+  for (const [index, program] of programs.entries()) {
+    const card = cards.nth(index);
+    await expect(card.locator(".program-age")).toHaveText(program.audience);
+    await expect(card.locator(".program-facts")).toContainText(getProgramCourseCount(program)!);
+    await expect(card.locator(".tags span")).toHaveText(program.tags);
+    await expect(card.locator(".module-list")).not.toBeVisible();
+    await card.getByRole("button", { name: `Xem chi tiết chương trình ${program.name}`, exact: true }).click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog.locator(".dialog-facts")).toContainText(program.audience);
+    await expect(dialog.locator(".dialog-facts")).toContainText(getProgramStructure(program)!);
+    await expect(dialog.getByRole("link", { name: "Đăng ký học thử" })).toHaveAttribute("href", "tel:0398288830");
+    await page.keyboard.press("Escape");
+  }
+  await expect(cards.nth(3).locator(".program-age")).toHaveText("7–15 tuổi");
+  await expect(page.locator("body")).not.toContainText(/\[CẦN BỔ SUNG\]|đang (được )?cập nhật|sẽ cập nhật sau|placeholder|TODO|TBD/i);
+  const brokenAnchors = await page.locator('a[href^="#"]').evaluateAll(links =>
+    links.map(link => link.getAttribute("href")!)
+      .filter(href => !document.getElementById(decodeURIComponent(href.slice(1))))
+  );
+  expect(brokenAnchors).toEqual([]);
+  const primaryLinks = page.locator("a.button--primary");
+  for (const link of await primaryLinks.all()) {
+    await expect(link).toHaveText("Đăng ký học thử");
+    await expect(link).toHaveAttribute("href", "tel:0398288830");
+  }
 });
 
 test("mobile menu and sticky CTA behave correctly", async ({ page }, testInfo) => {
@@ -113,11 +233,16 @@ test("mobile menu and sticky CTA behave correctly", async ({ page }, testInfo) =
   await page.keyboard.press("Escape");
   await expect(page.getByRole("button", { name: "Mở menu" })).toBeFocused();
   if (testInfo.project.name === "mobile") {
-    await page.locator(".mobile-cta").getByRole("link").click();
+    await expect(page.locator(".mobile-cta").getByRole("link")).toHaveAttribute("href", "tel:0398288830");
   } else {
     await page.getByRole("button", { name: "Mở menu" }).click();
-    await page.getByRole("navigation", { name: "Điều hướng di động" }).getByRole("link", { name: "Đăng ký học thử" }).click();
+    const trialLink = page.getByRole("navigation", { name: "Điều hướng di động" }).getByRole("link", { name: "Đăng ký học thử" });
+    await expect(trialLink).toHaveAttribute("href", "tel:0398288830");
+    await trialLink.evaluate(link => link.addEventListener("click", event => event.preventDefault(), { once: true }));
+    await trialLink.click();
+    await expect(page.getByRole("button", { name: "Mở menu" })).toHaveAttribute("aria-expanded", "false");
   }
+  await page.locator("#dang-ky").scrollIntoViewIfNeeded();
   await expect(page.getByRole("heading", { name: "Thông tin đăng ký học thử" })).toBeInViewport();
   await expect(page.locator(".mobile-cta")).not.toBeVisible();
 });

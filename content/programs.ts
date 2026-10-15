@@ -1,3 +1,5 @@
+import { trialContact } from "./contact";
+
 export type ProgramId = "rio" | "starter-kit" | "lap-trinh" | "dien-tu-co-ban";
 
 export type Program = {
@@ -7,7 +9,7 @@ export type Program = {
   category: string;
   description: string;
   audience: string;
-  structure: string;
+  levelCount?: number;
   tags: string[];
   modules: { name: string; group?: string; sessions?: number; tuition?: number; unit?: "chuyên đề" }[];
   example: { title: string; description: string };
@@ -18,8 +20,8 @@ export type Program = {
 export const programs: Program[] = [
   {
     id: "rio", number: "01", name: "Rio", category: "KHÁM PHÁ & ROBOT",
-    description: "Bắt đầu với những bước đi của robot. Từng bước khám phá thế giới và làm quen tư duy thuật toán.",
-    audience: "5–7 tuổi · tham khảo", structure: "5 khóa · 60 buổi theo giáo trình",
+    description: "Cho trẻ làm quen tư duy thuật toán qua điều khiển robot, khám phá đường đi và lập trình kéo thả.",
+    audience: "5–7 tuổi · tham khảo",
     tags: ["Robot", "Tư duy thuật toán", "Kéo thả"],
     modules: [
       { name: "Khám phá thế giới cùng Rio", sessions: 12, tuition: 2900000 },
@@ -34,8 +36,8 @@ export const programs: Program[] = [
   },
   {
     id: "starter-kit", number: "02", name: "Starter Kit", category: "CHẾ TẠO & SÁNG TẠO",
-    description: "Kết nối lập trình, cảm biến và cơ khí. Biến những ý tưởng gần gũi thành sản phẩm có thể hoạt động.",
-    audience: "7–12 tuổi · tùy cấp độ", structure: "6 khóa · 96 buổi theo giáo trình",
+    description: "Cho trẻ khám phá chế tạo sản phẩm, kết hợp lập trình Yolo:Bit, cảm biến và cơ khí.",
+    audience: "7–12 tuổi · tùy cấp độ",
     tags: ["Yolo:Bit", "Cảm biến", "Chế tạo"],
     modules: [
       { name: "Yolo:Bit – Nhà lập trình nhí", sessions: 16, tuition: 3200000 },
@@ -51,8 +53,8 @@ export const programs: Program[] = [
   },
   {
     id: "lap-trinh", number: "03", name: "Lập trình", category: "LOGIC & THUẬT TOÁN",
-    description: "Nhận ra quy luật, chia nhỏ vấn đề và sắp xếp từng bước. Xây nền tảng tư duy trước khi viết chương trình.",
-    audience: "5–7 tuổi · theo giáo trình", structure: "6 khóa · 96 buổi theo giáo trình",
+    description: "Cho trẻ xây nền tảng tư duy trước khi viết chương trình: nhận biết quy luật, suy luận và sắp xếp trình tự.",
+    audience: "5–7 tuổi · theo giáo trình",
     tags: ["Quy luật", "Logic", "Thuật toán"],
     modules: [
       { name: "Phát triển khả năng nhận biết quy luật", group: "Toán tư duy cơ bản · Khóa 1", sessions: 16, tuition: 3500000 },
@@ -68,8 +70,8 @@ export const programs: Program[] = [
   },
   {
     id: "dien-tu-co-ban", number: "04", name: "Điện tử cơ bản", category: "MẠCH ĐIỆN & KỸ THUẬT",
-    description: "Bắt đầu với mạch điện và mô hình đơn giản. Khám phá các cấp độ robot, lập trình nhúng và chuyên đề công nghệ.",
-    audience: "Độ tuổi: [CẦN BỔ SUNG]", structure: "4 nhóm cấp độ · 14 khóa & chuyên đề",
+    description: "Cho trẻ khám phá mạch điện và mô hình đơn giản, tiến tới robot, lập trình nhúng và chuyên đề công nghệ.",
+    audience: "7–15 tuổi", levelCount: 4,
     tags: ["Mạch điện", "LED & motor", "Thực hành"],
     modules: [
       { name: "Logic và kỹ thuật cơ bản", group: "Kỹ sư nhí tập sự · Khóa 1", tuition: 3500000 },
@@ -95,9 +97,24 @@ export const programs: Program[] = [
 
 export const formatTuition = (amount: number) => new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(amount);
 
+export function getProgramCourseCount(program: Program) {
+  if (program.modules.length === 0) return null;
+  return `${program.modules.length} ${program.modules.some(module => module.unit === "chuyên đề") ? "khóa & chuyên đề" : "khóa"}`;
+}
+
+export function getProgramStructure(program: Program) {
+  const courseCount = getProgramCourseCount(program);
+  if (!courseCount) return null;
+  const levels = program.levelCount ? `${program.levelCount} nhóm cấp độ · ` : "";
+  const sessions = program.modules.every(module => module.sessions !== undefined)
+    ? ` · ${program.modules.reduce((total, module) => total + (module.sessions ?? 0), 0)} buổi theo giáo trình`
+    : "";
+  return `${levels}${courseCount}${sessions}`;
+}
+
 export function getTuitionSummary(program: Program) {
   const amounts = program.modules.flatMap(module => module.tuition === undefined ? [] : [module.tuition]);
-  if (amounts.length !== program.modules.length || amounts.length === 0) return "Học phí đang cập nhật";
+  if (amounts.length !== program.modules.length || amounts.length === 0) return null;
   const lowest = Math.min(...amounts);
   const unit = program.modules.some(module => module.unit === "chuyên đề") ? "khóa hoặc chuyên đề" : "khóa";
   return `${amounts.some(amount => amount !== lowest) ? "Từ " : ""}${formatTuition(lowest)} / ${unit}`;
@@ -105,8 +122,8 @@ export function getTuitionSummary(program: Program) {
 
 export const faqs = [
   { question: "Con chưa từng học lập trình có thể bắt đầu từ đâu?", answer: "Khóa đầu của Rio không yêu cầu kiến thức trước; trẻ cần có thể nghe và làm theo hướng dẫn 1–2 bước. Starter Kit bắt đầu với việc nhận biết chuỗi lệnh, nút và biểu tượng. Việc lựa chọn chương trình cần dựa trên độ tuổi và khả năng hiện tại của con." },
-  { question: "Rio và Starter Kit khác nhau như thế nào?", answer: "Rio sử dụng robot để khám phá, điều khiển đường đi và làm quen thuật toán, với độ tuổi tham khảo 5–7. Starter Kit mở rộng sang lập trình Yolo:Bit, cảm biến, cơ khí và chế tạo sản phẩm; các cấp độ có độ tuổi tham khảo từ 7–12." },
+  { question: "Rio và Starter Kit khác nhau như thế nào?", answer: "Rio sử dụng robot để khám phá, điều khiển đường đi và làm quen thuật toán. Starter Kit mở rộng sang lập trình Yolo:Bit, cảm biến, cơ khí và chế tạo sản phẩm. Độ tuổi tham khảo của từng chương trình được ghi tại phần Chương trình học." },
   { question: "Trẻ có sử dụng màn hình trong buổi học không?", answer: "Hai khóa đầu của Rio ưu tiên thẻ lệnh, nút nhấn và hoạt động không màn hình cá nhân. Từ khóa 3, giáo trình giới thiệu lập trình kéo thả theo cặp, xen kẽ hoạt động với robot thật. Starter Kit có lập trình kết hợp thực hành lắp ráp và thử nghiệm." },
   { question: "Con có bắt buộc học Rio trước Starter Kit không?", answer: "Không bắt buộc. Theo giáo trình, đầu vào Starter Kit có thể là hoàn thành Rio hoặc đã nhận biết chuỗi lệnh, nút và biểu tượng. Cấp độ phù hợp cần được xác định theo năng lực của từng trẻ." },
-  { question: "Buổi học thử diễn ra như thế nào?", answer: "Nội dung, lịch và chi phí học thử đang được cập nhật. Phụ huynh vui lòng liên hệ hotline trong phần đăng ký học thử để được tư vấn." },
+  { question: "Buổi học thử diễn ra như thế nào?", answer: trialContact.schedule },
 ];
