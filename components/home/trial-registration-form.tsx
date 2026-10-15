@@ -2,6 +2,8 @@
 
 import { useRef, useState, type FormEvent } from "react";
 import { contact } from "@/content/contact";
+import { programs } from "@/content/programs";
+import { trackConversion } from "@/lib/analytics";
 import { Button } from "@/components/ui/button";
 import { isRecord, leadLimits, leadMessages, leadPrograms, validateLead, type LeadErrors, type LeadField } from "@/lib/leads";
 import { useTrialRegistration } from "./trial-registration-provider";
@@ -40,6 +42,11 @@ export function TrialRegistrationForm() {
       });
       const result: unknown = await response.json();
       if (!response.ok || !isRecord(result) || result.success !== true) throw new Error("Lead submission failed");
+      trackConversion("submit_lead", {
+        course: programs.find(program => program.name === validation.data.program)?.id ?? "general",
+        pagePath: validation.data.sourcePage,
+        location: "bottom_form",
+      });
       form.reset();
       selectProgram();
       setStatus("success");

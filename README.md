@@ -1,12 +1,31 @@
 # STEM Fighters — Homepage & Course Pages
 
-Website Next.js App Router + TypeScript + Tailwind CSS, theo Design System đã duyệt. Homepage giúp so sánh bốn chương trình ngang hàng; mỗi chương trình có landing page riêng. Form học thử dùng chung, gửi qua API server tới Google Sheets. Không có Supabase, Apps Script, Drive API, analytics hoặc tài khoản.
+Website Next.js App Router + TypeScript + Tailwind CSS, theo Design System đã duyệt. Homepage giúp so sánh bốn chương trình ngang hàng; mỗi chương trình có landing page riêng. Form học thử dùng chung, gửi qua API server tới Google Sheets. Có conversion events qua dataLayer, chưa cài GA4/GTM/Meta Pixel. Không có Supabase, Apps Script, Drive API hoặc tài khoản.
 
 ## Thiết lập nhận lead
 
 Xem [hướng dẫn Google Sheets từng bước](docs/GOOGLE_SHEETS_LEAD_SETUP.md). Cần tạo Sheet thủ công, bật Sheets API, share riêng Sheet cho Service Account và cấu hình `GOOGLE_SHEET_ID`, `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY` trên server.
 
 **Không commit JSON/private key, không đặt credentials ở frontend hoặc biến public, không public Sheet.** Nếu key bị lộ, revoke key cũ, tạo key mới và redeploy theo tài liệu. Live integration cần setup thủ công; tests không chứng minh Sheet thật đã kết nối.
+
+## Conversion tracking
+
+`lib/analytics.ts` cung cấp `trackConversion`; chỉ push vào `window.dataLayer` hiện có (hoặc tạo queue nếu chưa có), không tải analytics script và không khởi tạo lại GA4/Meta Pixel. Lỗi từ tag bên ngoài được cảnh báo ở console, không chặn CTA hoặc kết quả gửi form.
+
+| Event | Thời điểm | `cta_location` |
+| --- | --- | --- |
+| `click_hoc_thu` | Click CTA “Đăng ký học thử” | `header`, `hero`, `mid_page`, `sticky_mobile` |
+| `submit_lead` | API trả HTTP thành công và `success: true`, sau khi backend xác nhận lưu | `bottom_form` |
+| `click_zalo` | Click liên kết Zalo hiện có | `bottom_form`, `sticky_mobile`, `footer` |
+| `click_phone` | Click hotline `tel:0398288830` | `bottom_form`, `footer` |
+
+Mỗi event chỉ có `event`, `course`, `page_path`, `cta_location`. Không đưa tên phụ huynh, điện thoại, tuổi trẻ, query string hoặc UTM vào dataLayer. `course`: `rio`, `starter_kit`, `logic_programming`, `basic_electronics`, hoặc `general`. CTA dùng khóa học của card/trang; `submit_lead` dùng chương trình thực sự được chọn trong payload, kể cả khi người dùng thay đổi lựa chọn. `page_path` của lead là trang gửi request, không đổi nếu điều hướng trong khi chờ phản hồi.
+
+`ConversionTracking` bắt click hotline/Zalo dùng chung trên mọi trang, lấy vị trí từ `data-cta-location` của container. Khi thêm vị trí liên hệ mới, đặt attribute này theo `CTALocation`; không thêm listener hoặc gọi tracking lần thứ hai trên cùng link.
+
+**Cấu hình thủ công để nhận dữ liệu:** hiện queue chưa gửi dữ liệu đến nền tảng nào. Chủ website cần cung cấp GTM Container ID (`GTM-...`) và GA4 Measurement ID (`G-...`) nếu dùng GTM/GA4, hoặc Meta Pixel ID nếu dùng Meta. Không cần gửi private key hay mật khẩu analytics. Trong GTM, tạo Custom Event triggers theo bốn tên trên, Data Layer Variables cho ba tham số, gắn tag GA4/Meta tương ứng và publish container. Chỉ đánh dấu `submit_lead` là lead thành công; không map click nút thành lead. Không cài thêm script GA4/Pixel nếu container hiện có đã tải chúng; xử lý consent theo cấu hình được chủ website duyệt.
+
+Kiểm tra trong GTM Preview/GA4 DebugView sau khi cấu hình và deploy. Có thể kiểm tra queue cục bộ bằng `window.dataLayer`; mở trang khác qua client navigation không được nhân đôi listener. Không có cookie banner được triển khai trong repository hiện tại; nếu bổ sung sau này, cần kiểm tra lại vị trí sticky CTA.
 
 ## Chạy local
 
@@ -33,7 +52,7 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-Playwright chạy production server cổng 3100 với Google credentials trống. Ba project chính kiểm tra 390/768/1440px; viewport sweep bổ sung 375/1024px cho homepage, Rio và Điện tử cơ bản. Kiểm tra SEO/HTML không cần JavaScript, curriculum, keyboard/focus, menu, FAQ, ảnh, overflow, honeypot, mobile CTA và form/UTM. Test giao diện dùng API fixture; kiểm tra append dùng Google client với server fixture cục bộ, không ghi lead thử vào Sheet thật.
+Playwright chạy production server cổng 3100 với Google credentials trống. Ba project chính kiểm tra 390/768/1440px; viewport sweep bổ sung 375/1024px cho homepage, Rio và Điện tử cơ bản. `tests/conversion.spec.ts` kiểm tra thêm cả năm trang ở 360/390/768/1280/1440/1920px và các conversion events. Kiểm tra SEO/HTML không cần JavaScript, curriculum, keyboard/focus, menu, FAQ, ảnh, overflow, honeypot, mobile CTA và form/UTM. Test giao diện dùng API fixture; kiểm tra append dùng Google client với server fixture cục bộ, không ghi lead thử vào Sheet thật.
 
 ## Cấu trúc
 
@@ -56,11 +75,11 @@ Gallery “Hoạt động tại STEM Fighters” dùng 6 ảnh, 3 cột trên ta
 
 ## Tương tác trong phase này
 
-- Navbar trên course page liên kết về các section homepage; breadcrumb về trang chủ. Mỗi course page liên kết tới ba chương trình còn lại.
+- Navbar trên course page liên kết về các section homepage; breadcrumb “← Về trang chủ” và logo đều về `/`. Mỗi course page có ba card chương trình khác, dùng summary sẵn có và CTA “Xem chương trình”.
 - Bốn card ngang hàng chỉ hiển thị tóm tắt, độ tuổi, ba keyword, số khóa, học phí và CTA. “Xem chi tiết” là HTML link tới course page; homepage không render curriculum, accordion hay modal chương trình.
 - `content/programs.ts` là nguồn dữ liệu khóa học: số khóa, tổng số buổi và học phí tóm tắt được tính từ `modules`. Giữ nguyên toàn bộ modules, độ tuổi, tên và học phí. `id` nội bộ `lap-trinh` không đổi; `slug` SEO là `tu-duy-logic-lap-trinh`.
 - CTA “Đăng ký học thử” dùng chung `TrialCTA`, cuộn/focus một form ở `#dang-ky` ngay trên trang hiện tại. Course page mặc định chọn chương trình tương ứng (vẫn có thể thay đổi); homepage CTA chung chọn “Chưa xác định / Cần tư vấn”. Provider giữ UTM qua điều hướng client; `sourcePage` ghi pathname của trang gửi form. Không thay schema/API Google Sheets.
-- Sticky CTA dưới 768px có “Đăng ký học thử” và “Chat Zalo”, dùng URL liên hệ hiện có. IntersectionObserver chỉ hiện sau hero và ẩn khi khu vực đăng ký/footer xuất hiện; cũng ẩn khi menu mở. Có safe-area dưới cùng.
+- Sticky CTA dưới 768px có “Đăng ký học thử” và “Chat Zalo”, dùng URL liên hệ hiện có. IntersectionObserver chỉ hiện sau hero và ẩn khi khu vực đăng ký/footer xuất hiện; cũng ẩn khi menu mở hoặc form đang có focus. Có safe-area dưới cùng.
 - “Website” là honeypot: vẫn tồn tại trong form, được clip 1px/absolute, `aria-hidden`, `tabIndex=-1`, `autoComplete=off`; không chiếm chỗ và không yêu cầu phụ huynh nhập. Client và server vẫn từ chối khi field có dữ liệu.
 - Số điện thoại được ghi rõ “Gọi điện”; “Chat Zalo” và Facebook chính thức là lựa chọn liên hệ riêng, không thay đích form của CTA học thử.
 - Bản đồ Google Maps nhỏ tại khối liên hệ dùng chung địa chỉ với link chỉ đường, tải lazy qua iframe. Click hoặc dùng bàn phím trên bản đồ mở Google Maps ở tab mới; bản đồ nằm cạnh địa chỉ trên desktop và bên dưới ở màn hình hẹp. Cần kết nối tới Google để tải bản đồ; link chỉ đường vẫn dùng được nếu embed bị chặn.

@@ -71,7 +71,7 @@ test("QA: keyboard course navigation, FAQ focus and hover", async ({ page }) => 
   await expect(page).toHaveURL(/\/khoa-hoc\/starter-kit$/);
   await expect(page.getByRole("heading", { level: 1, name: "Starter Kit", exact: true })).toBeVisible();
   await expect(page.getByLabel("Chương trình quan tâm")).toHaveValue("Starter Kit");
-  await page.getByRole("link", { name: "Trang chủ", exact: true }).focus();
+  await page.getByRole("link", { name: "Về trang chủ", exact: true }).focus();
   await page.keyboard.press("Enter");
   await expect(page.locator(".program-card")).toHaveCount(4);
   await page.locator(".faq-list summary").first().focus();

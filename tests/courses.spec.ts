@@ -70,7 +70,7 @@ for (const program of programs) {
     const brokenAnchors = await page.locator('a[href^="#"]').evaluateAll(links => links.map(link => link.getAttribute("href")!).filter(href => !document.getElementById(href.slice(1))));
     expect(brokenAnchors).toEqual([]);
     for (const other of programs.filter(other => other.id !== program.id)) {
-      await expect(page.locator(".related-programs").getByRole("link", { name: `Xem chi tiết chương trình ${other.name}`, exact: true })).toHaveAttribute("href", getProgramPath(other));
+      await expect(page.locator(".related-programs").getByRole("link", { name: `Xem chương trình ${other.name}`, exact: true })).toHaveAttribute("href", getProgramPath(other));
     }
     const navigation = testInfo.project.name === "desktop" ? page.locator(".desktop-nav") : page.locator("#mobile-menu");
     if (testInfo.project.name !== "desktop") await page.getByRole("button", { name: "Mở menu" }).click();
@@ -175,7 +175,7 @@ for (const blockedStorage of [false, true]) {
     await expect(page).toHaveURL(/utm_campaign=rio/);
     await page.getByLabel("Chương trình quan tâm").selectOption("Điện tử cơ bản");
     await page.evaluate(() => { document.documentElement.dataset.navigationMarker = "same-document"; });
-    await page.locator(".related-programs").getByRole("link", { name: "Xem chi tiết chương trình Starter Kit", exact: true }).click();
+    await page.locator(".related-programs").getByRole("link", { name: "Xem chương trình Starter Kit", exact: true }).click();
     await expect(page).toHaveURL(/\/khoa-hoc\/starter-kit$/);
     await expect(page.locator("html")).toHaveAttribute("data-navigation-marker", "same-document");
     await expect(page.getByLabel("Chương trình quan tâm")).toHaveValue("Starter Kit");
@@ -187,7 +187,7 @@ for (const blockedStorage of [false, true]) {
     expect(payloads).toHaveLength(1);
     expect(payloads[0]).toMatchObject({ program: "Starter Kit", sourcePage: "/khoa-hoc/starter-kit", utmSource: "facebook", utmMedium: "paid", utmCampaign: "rio", website: "" });
     await expect(page.getByLabel("Chương trình quan tâm")).toHaveValue("Starter Kit");
-    await page.getByRole("link", { name: "Trang chủ", exact: true }).click();
+    await page.getByRole("link", { name: "Về trang chủ", exact: true }).click();
     await expect(page.getByLabel("Chương trình quan tâm")).toHaveValue(undecidedProgram);
   });
 }

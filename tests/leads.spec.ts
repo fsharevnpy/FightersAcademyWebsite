@@ -68,7 +68,7 @@ test("program card/detail CTAs preselect the one form and hero resets the select
     await page.locator("#hero-actions").getByRole("link", { name: "Đăng ký học thử" }).click();
     await expect(page.getByLabel("Chương trình quan tâm")).toHaveValue(program.name);
     await expect(page.getByRole("form", { name: "Đăng ký học thử" })).toBeFocused();
-    await page.getByRole("link", { name: "Trang chủ", exact: true }).click();
+    await page.getByRole("link", { name: "Về trang chủ", exact: true }).click();
     await expect(page.locator(".program-card")).toHaveCount(4);
   }
   await page.locator("#hero-actions").getByRole("link", { name: "Đăng ký học thử" }).click();

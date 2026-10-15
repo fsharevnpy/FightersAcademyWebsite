@@ -5,7 +5,7 @@ import { TrialRegistrationForm } from "./trial-registration-form";
 import { contact, trialContact } from "@/content/contact";
 
 export function RegistrationSection({ children = <TrialRegistrationForm /> }: { children?: ReactNode }) {
-  return <section id="dang-ky" className="registration-section" aria-labelledby="registration-title">
+  return <section id="dang-ky" className="registration-section" aria-labelledby="registration-title" data-cta-location="bottom_form">
     <div className="container registration-panel">
       <div className="registration-copy">
         <p className="eyebrow"><span aria-hidden="true" />HẸN GẶP TẠI STEM FIGHTERS</p>

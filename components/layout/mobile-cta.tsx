@@ -27,5 +27,5 @@ export function MobileCTA() {
     [hero, registration, footer].forEach(node => observer.observe(node));
     return () => observer.disconnect();
   }, [pathname]);
-  return visible ? <nav className="mobile-cta" aria-label="Liên hệ nhanh"><TrialCTA /><ButtonLink href={contact.zaloHref} variant="secondary" target="_blank" rel="noopener noreferrer">Chat Zalo<MessageCircle size={18} aria-hidden="true" /></ButtonLink></nav> : null;
+  return visible ? <nav className="mobile-cta" aria-label="Liên hệ nhanh" data-cta-location="sticky_mobile"><TrialCTA location="sticky_mobile" /><ButtonLink href={contact.zaloHref} variant="secondary" target="_blank" rel="noopener noreferrer">Chat Zalo<MessageCircle size={18} aria-hidden="true" /></ButtonLink></nav> : null;
 }

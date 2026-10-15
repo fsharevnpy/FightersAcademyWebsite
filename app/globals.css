@@ -69,7 +69,8 @@
   .skip-link:focus { transform: translateY(0); }
   .site-header { position: sticky; top: 0; z-index: 30; background: #fffffffa; border-bottom: 1px solid #e9eef5; backdrop-filter: blur(14px); }
   .header-inner { height: 88px; display: flex; justify-content: space-between; gap: 20px; align-items: center; }
-  .brand { display: inline-flex; align-items: center; gap: 9px; flex-shrink: 0; }
+  .brand { display: inline-flex; align-items: center; gap: 9px; flex-shrink: 0; cursor: pointer; }
+  .brand:hover { opacity: .9; }
   .brand-emblem { display: flex; width: 55px; height: 58px; align-items: center; justify-content: center; }
   .brand-emblem img { object-fit: contain; width: 55px; height: 58px; }
   .brand-wordmark { color: var(--color-navy); font-weight: 700; letter-spacing: -.7px; font-size: 20px; line-height: 1.2; }
@@ -144,6 +145,7 @@
   .curriculum-group { border-bottom: 1px solid var(--color-line); }
   .curriculum-group h3 { margin: 0; font-size: 18px; }
   .curriculum-group h3 button { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 64px; padding: 14px 4px; border: 0; background: transparent; color: var(--color-navy); text-align: left; font-weight: 600; }
+  .curriculum-group h3 button:hover { color: var(--color-brand); }
   .curriculum-group h3 small { display: block; margin-top: 4px; color: var(--color-muted); font-size: 13px; font-weight: 400; }
   .curriculum-group h3 svg { transition: transform .18s; }
   .curriculum-group h3 [aria-expanded="true"] svg { transform: rotate(180deg); }
@@ -158,10 +160,11 @@
   .examples-note { font-size: 14px; color: var(--color-muted); margin-block: 24px 8px; }
   .faq-trial { margin-block: 8px 20px; }
   .course-hero { padding-bottom: 64px; }
-  .breadcrumb { padding-block: 24px 32px; color: var(--color-muted); font-size: 14px; }
-  .breadcrumb ol { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+  .breadcrumb { padding-block: 24px 32px; color: var(--color-muted); font-size: 16px; }
+  .breadcrumb ol { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; list-style: none; margin: 0; padding: 0; }
   .breadcrumb li + li::before { content: "/"; margin-right: 8px; }
-  .breadcrumb a { color: var(--color-brand); text-decoration: underline; text-underline-offset: 4px; }
+  .breadcrumb a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--color-brand); font-weight: 600; text-underline-offset: 4px; border-radius: 4px; }
+  .breadcrumb a:hover, .breadcrumb a:focus-visible { color: var(--color-brand-hover); text-decoration: underline; }
   .course-hero-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, .6fr); gap: 48px; align-items: center; }
   .course-hero h1 { margin-bottom: 20px; }
   .course-description { font-size: 18px; color: var(--color-muted); line-height: 1.8; margin-block: 20px; }
@@ -183,6 +186,7 @@
   .related-programs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 32px; }
   .related-programs article { display: flex; flex-direction: column; padding: 24px; border: 1px solid var(--color-line); border-radius: 16px; }
   .related-programs h3 { font-size: 22px; margin-bottom: 12px; }
+  .related-programs h3 a:hover { color: var(--color-brand); text-decoration: underline; text-underline-offset: 4px; }
   .related-programs p { color: var(--color-muted); }
   .related-programs .text-link { margin-top: auto; padding-top: 16px; }
   .process-section { background: #f5f9fc; border-block: 1px solid #eaf0f5; }
@@ -400,6 +404,7 @@
   .example-photo .learning-photo-frame { aspect-ratio: 4 / 3; }
   .examples-note { line-height: 1.8; }
   .course-hero { padding-bottom: 40px; }
+  .breadcrumb { font-size: 15px; }
   .course-hero-grid, .course-intro-grid, .related-programs { grid-template-columns: 1fr; }
   .course-hero h1 { font-size: 36px; }
   .course-art { max-width: 220px; width: 100%; margin-inline: auto; padding: 12px; }
@@ -444,7 +449,7 @@
   .site-footer { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
   .mobile-cta { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 10px; position: fixed; z-index: 25; bottom: 0; left: 0; right: 0; background: #fffffffa; border-top: 1px solid var(--color-line); padding: 10px 20px calc(10px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 20px #0b1f4b07; }
   .mobile-cta .button { width: 100%; min-width: 0; padding-inline: 10px; font-size: 14px; gap: 6px; }
-  body[data-menu-open="true"] .mobile-cta { display: none; }
+  body[data-menu-open="true"] .mobile-cta, body:has(.lead-form:focus-within) .mobile-cta { display: none; }
 }
 @media (max-width: 374px) {
   .program-card-bottom { grid-template-columns: 1fr; }

@@ -54,7 +54,7 @@ export default async function CoursePage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb).replace(/</g, "\\u003c") }} />
       <section className="course-hero section-tinted">
         <div className="container">
-          <nav className="breadcrumb" aria-label="Breadcrumb"><ol><li><Link href="/">Trang chủ</Link></li><li aria-current="page">{program.name}</li></ol></nav>
+          <nav className="breadcrumb" aria-label="Breadcrumb"><ol><li><Link href="/"><span aria-hidden="true">←</span> Về trang chủ</Link></li><li aria-current="page">{program.name}</li></ol></nav>
           <div className="course-hero-grid">
             <div>
               <p className="eyebrow"><span aria-hidden="true" />{program.category}</p>
@@ -64,7 +64,7 @@ export default async function CoursePage({ params }: Props) {
               <div className="tags" aria-label="Kỹ năng và công nghệ">{program.tags.map(tag => <span key={tag}>{tag}</span>)}</div>
               <p className="course-structure">{getProgramStructure(program)}</p>
               {tuition && <p className="course-tuition"><span>Học phí</span><strong>{tuition}</strong></p>}
-              <div id="hero-actions" className="hero-actions"><TrialCTA program={program.id} /><ButtonLink href="#lo-trinh" variant="secondary">Xem lộ trình<ArrowDown size={18} aria-hidden="true" /></ButtonLink></div>
+              <div id="hero-actions" className="hero-actions"><TrialCTA program={program.id} location="hero" /><ButtonLink href="#lo-trinh" variant="secondary">Xem lộ trình<ArrowDown size={18} aria-hidden="true" /></ButtonLink></div>
             </div>
             <div className="course-art"><ProgramArt kind={program.id} /></div>
           </div>
@@ -87,8 +87,8 @@ export default async function CoursePage({ params }: Props) {
       <section className="section"><div className="container">
         <SectionHeading eyebrow="CÁC HƯỚNG KHÁM PHÁ KHÁC" title="Khám phá chương trình khác" />
         <div className="related-programs">{programs.filter(other => other.id !== program.id).map(other => <article key={other.id}>
-          <h3><Link href={getProgramPath(other)}>{other.name}</Link></h3><p className="program-age">{other.audience}</p><p>{other.description}</p>
-          <Link href={getProgramPath(other)} className="text-link" aria-label={`Xem chi tiết chương trình ${other.name}`}>Xem chi tiết<ArrowUpRight size={18} aria-hidden="true" /></Link>
+          <h3><Link href={getProgramPath(other)}>{other.name}</Link></h3><p className="program-age">{other.audience}</p><p>{other.summary}</p>
+          <Link href={getProgramPath(other)} className="text-link" aria-label={`Xem chương trình ${other.name}`}>Xem chương trình<ArrowUpRight size={18} aria-hidden="true" /></Link>
         </article>)}</div>
       </div></section>
     </main>

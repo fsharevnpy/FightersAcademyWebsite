@@ -28,12 +28,12 @@ export function SiteHeader() {
     <div className="container header-inner">
       <Brand />
       <nav className="desktop-nav" aria-label="Điều hướng chính">{links.map(link => <Link key={link.href} href={`${home}${link.href}`}>{link.label}</Link>)}</nav>
-      <TrialCTA className="header-cta" />
+      <TrialCTA className="header-cta" location="header" />
       <button ref={toggle} type="button" className="menu-toggle" aria-expanded={open} aria-controls={open ? "mobile-menu" : undefined} aria-label={open ? "Đóng menu" : "Mở menu"} onClick={() => setOpen(!open)}>{open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}</button>
     </div>
     {open && <nav id="mobile-menu" className="mobile-menu container" aria-label="Điều hướng di động">
       {links.map(link => <Link key={link.href} href={`${home}${link.href}`} onClick={() => setOpen(false)}>{link.label}<ArrowUpRight size={18} aria-hidden="true" /></Link>)}
-      <TrialCTA onClick={() => setOpen(false)} />
+      <TrialCTA location="header" onClick={() => setOpen(false)} />
     </nav>}
   </header>;
 }

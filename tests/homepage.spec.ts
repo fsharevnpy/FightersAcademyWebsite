@@ -83,7 +83,7 @@ test("each program links to its curriculum and back to the homepage", async ({ p
     await expect(page.getByRole("heading", { name: program.name, exact: true, level: 1 })).toBeVisible();
     if (program.id === "dien-tu-co-ban") await page.locator(".curriculum-group h3 button").first().click();
     await expect(page.locator(".module-list li").first()).toBeVisible();
-    await page.getByRole("link", { name: "Trang chủ", exact: true }).click();
+    await page.getByRole("link", { name: "Về trang chủ", exact: true }).click();
     await expect(page.locator(".program-card")).toHaveCount(4);
   }
 });

@@ -4,7 +4,7 @@ import { Brand } from "@/components/ui/brand";
 import { contact } from "@/content/contact";
 
 export function SiteFooter() {
-  return <footer className="site-footer">
+  return <footer className="site-footer" data-cta-location="footer">
     <div className="container footer-grid">
       <div><Brand inverse /><p className="footer-description">Không chỉ khám phá công nghệ.<br />Tự tay tạo nên điều mới.</p></div>
       <div><h2>Khám phá</h2><Link href="/#chuong-trinh">Chương trình học <ArrowUpRight size={14} aria-hidden="true" /></Link><Link href="/#cach-hoc">Cách học tại STEM Fighters</Link><Link href="/#hoat-dong">Hình ảnh hoạt động</Link><a href="#cau-hoi">Câu hỏi thường gặp</a></div>

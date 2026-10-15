@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { programs } from "@/content/programs";
 import { siteUrl } from "@/content/contact";
 import { TrialRegistrationProvider } from "@/components/home/trial-registration-provider";
+import { ConversionTracking } from "@/components/layout/conversion-tracking";
 import "@fontsource/be-vietnam-pro/vietnamese-400.css";
 import "@fontsource/be-vietnam-pro/vietnamese-500.css";
 import "@fontsource/be-vietnam-pro/vietnamese-600.css";
@@ -24,5 +25,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: "#0B1F4B" };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="vi"><body><a href="#main-content" className="skip-link">Chuyển đến nội dung chính</a><TrialRegistrationProvider>{children}</TrialRegistrationProvider></body></html>;
+  return <html lang="vi"><body><a href="#main-content" className="skip-link">Chuyển đến nội dung chính</a><ConversionTracking /><TrialRegistrationProvider>{children}</TrialRegistrationProvider></body></html>;
 }
