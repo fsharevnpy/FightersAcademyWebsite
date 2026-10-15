@@ -1,0 +1,98 @@
+{
+  "qa-desktop": {
+    "metrics": {
+      "cls": 0,
+      "lcp": 252,
+      "scripts": [
+        {
+          "url": "http://127.0.0.1:3100/_next/static/chunks/1tty6l8tgntgq.js",
+          "bytes": 48397
+        },
+        {
+          "url": "http://127.0.0.1:3100/_next/static/chunks/turbopack-3-ry682tkyiqk.js",
+          "bytes": 3940
+        },
+        {
+          "url": "http://127.0.0.1:3100/_next/static/chunks/209aaqjv6z8gh.js",
+          "bytes": 71899
+        },
+        {
+          "url": "http://127.0.0.1:3100/_next/static/chunks/0umf92h1sb77c.js",
+          "bytes": 3514
+        },
+        {
+          "url": "http://127.0.0.1:3100/_next/static/chunks/3ch47kxjeih0x.js",
+          "bytes": 11390
+        }
+      ]
+    },
+    "violation_rules": [
+      "color-contrast"
+    ],
+    "runtime_errors": []
+  },
+  "qa-mobile": {
+    "metrics": {
+      "cls": 0,
+      "lcp": 160,
+      "scripts": [
+        {
+          "url": "http://127.0.0.1:3100/_next/static/chunks/turbopack-3-ry682tkyiqk.js",
+          "bytes": 3940
+        },
+        {
+          "url": "http://127.0.0.1:3100/_next/static/chunks/1tty6l8tgntgq.js",
+          "bytes": 48397
+        },
+        {
+          "url": "http://127.0.0.1:3100/_next/static/chunks/209aaqjv6z8gh.js",
+          "bytes": 71899
+        },
+        {
+          "url": "http://127.0.0.1:3100/_next/static/chunks/0umf92h1sb77c.js",
+          "bytes": 3514
+        },
+        {
+          "url": "http://127.0.0.1:3100/_next/static/chunks/3ch47kxjeih0x.js",
+          "bytes": 11390
+        }
+      ]
+    },
+    "violation_rules": [
+      "color-contrast"
+    ],
+    "runtime_errors": []
+  },
+  "qa-tablet": {
+    "metrics": {
+      "cls": 0.0042553517657021684,
+      "lcp": 208,
+      "scripts": [
+        {
+          "url": "http://127.0.0.1:3100/_next/static/chunks/1tty6l8tgntgq.js",
+          "bytes": 48397
+        },
+        {
+          "url": "http://127.0.0.1:3100/_next/static/chunks/turbopack-3-ry682tkyiqk.js",
+          "bytes": 3940
+        },
+        {
+          "url": "http://127.0.0.1:3100/_next/static/chunks/0umf92h1sb77c.js",
+          "bytes": 3514
+        },
+        {
+          "url": "http://127.0.0.1:3100/_next/static/chunks/209aaqjv6z8gh.js",
+          "bytes": 71899
+        },
+        {
+          "url": "http://127.0.0.1:3100/_next/static/chunks/3ch47kxjeih0x.js",
+          "bytes": 11390
+        }
+      ]
+    },
+    "violation_rules": [
+      "color-contrast"
+    ],
+    "runtime_errors": []
+  }
+}

@@ -1,0 +1,7 @@
+import Image from "next/image";
+import { ArrowDownRight } from "lucide-react";
+import { SectionHeading } from "@/components/ui/section-heading";
+
+export function ActivityGallery() {
+  return <section id="hoat-dong" className="section"><div className="container"><div className="section-title-row"><SectionHeading eyebrow="NHỮNG KHOẢNH KHẮC THỰC HÀNH" title="Tập trung làm.\nHào hứng khám phá." /><div className="gallery-aside"><p>Một góc lớp học.<br />Nhiều điều đang được khám phá.</p><ArrowDownRight size={32} strokeWidth={1.3} aria-hidden="true" /></div></div><div className="activity-grid"><figure className="activity-large"><Image src="/images/mentor-student.jpg" alt="Người hướng dẫn và học viên cùng thực hành với linh kiện và mô hình lắp ghép" fill sizes="(min-width: 1280px) 720px, (min-width: 768px) 60vw, 90vw" /><figcaption>Đồng hành trong từng bước thực hành</figcaption></figure><figure className="activity-small"><Image src="/images/student-building.jpg" alt="Học viên tập trung lắp ghép mô hình tại bàn thực hành" fill sizes="(min-width: 1280px) 460px, (min-width: 768px) 36vw, 44vw" /><figcaption>Tự tay khám phá</figcaption></figure><figure className="activity-small"><Image src="/images/classroom.jpg" alt="Người hướng dẫn giới thiệu nội dung về vi xử lý ESP32 trong lớp học" fill sizes="(min-width: 1280px) 460px, (min-width: 768px) 36vw, 44vw" /><figcaption>Kết nối kiến thức với vật thật</figcaption></figure></div></div></section>;
+}

@@ -1,0 +1,5 @@
+import { ArrowDownRight, CalendarDays, MapPin, Phone } from "lucide-react";
+
+export function RegistrationSection() {
+  return <section id="dang-ky" className="registration-section" aria-labelledby="registration-title"><div className="container"><div className="registration-panel"><div className="registration-copy"><p className="eyebrow"><span aria-hidden="true" />BẮT ĐẦU HÀNH TRÌNH KHÁM PHÁ</p><h2 id="registration-title">Cùng tìm chương trình<br />phù hợp cho con.</h2><p>Một trải nghiệm mới có thể bắt đầu từ một câu hỏi nhỏ.</p><ArrowDownRight className="registration-arrow" size={48} strokeWidth={1.2} aria-hidden="true" /></div><div className="registration-info"><h3>Thông tin đăng ký học thử</h3><p>Lịch học thử và kênh tiếp nhận đăng ký đang được cập nhật.</p><dl><div><dt><CalendarDays size={18} aria-hidden="true" />Lịch & chi phí học thử</dt><dd>[CẦN BỔ SUNG]</dd></div><div><dt><MapPin size={18} aria-hidden="true" />Cơ sở</dt><dd>[CẦN BỔ SUNG]</dd></div><div><dt><Phone size={18} aria-hidden="true" />Hotline đăng ký</dt><dd>[CẦN BỔ SUNG]</dd></div></dl></div></div></div></section>;
+}

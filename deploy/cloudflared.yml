@@ -1,0 +1,8 @@
+# Dedicated website tunnel. Scheduler's system tunnel is not modified.
+tunnel: d2dad707-48a8-4e89-98a6-9a27fe352478
+credentials-file: /etc/cloudflared/tunnel.json
+
+ingress:
+  - hostname: fightersacademy.com.vn
+    service: http://website:80
+  - service: http_status:404
