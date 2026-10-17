@@ -52,7 +52,7 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-Playwright chạy production server cổng 3100 với Google credentials trống. Ba project chính kiểm tra 390/768/1440px; viewport sweep bổ sung 375/1024px cho homepage, Rio và Điện tử cơ bản. `tests/conversion.spec.ts` kiểm tra thêm cả năm trang ở 360/390/768/1280/1440/1920px và các conversion events. Kiểm tra SEO/HTML không cần JavaScript, curriculum, keyboard/focus, menu, FAQ, ảnh, overflow, honeypot, mobile CTA và form/UTM. Test giao diện dùng API fixture; kiểm tra append dùng Google client với server fixture cục bộ, không ghi lead thử vào Sheet thật.
+Playwright chạy production server cổng 3100 với Google credentials trống. Ba project chính kiểm tra 390/768/1440px; viewport sweep bổ sung 375/1024px cho homepage, Rio và Điện tử & Robot thông minh. `tests/conversion.spec.ts` kiểm tra thêm cả năm trang ở 360/390/768/1280/1440/1920px và các conversion events. Kiểm tra SEO/HTML không cần JavaScript, curriculum, keyboard/focus, menu, FAQ, ảnh, overflow, honeypot, mobile CTA và form/UTM. Test giao diện dùng API fixture; kiểm tra append dùng Google client với server fixture cục bộ, không ghi lead thử vào Sheet thật.
 
 ## Cấu trúc
 
@@ -62,16 +62,27 @@ Playwright chạy production server cổng 3100 với Google credentials trống
 - `components/home/`: các section homepage và component curriculum, FAQ, form được reuse trên course pages.
 - `content/programs.ts`: nguồn dữ liệu bốn chương trình, slug, summary ngắn cho homepage (giữ nguyên description đầy đủ), nội dung giáo trình, học phí từng khóa/chuyên đề, nguồn học phí, kỹ năng và FAQ chung/riêng.
 - `content/contact.ts`: hotline, địa chỉ, Google Maps và nội dung CTA/lịch học thử dùng chung.
-- `content/media.ts`: ảnh hoạt động, alt text, caption, điểm crop và đường dẫn ảnh gốc cho các ảnh mới.
+- `content/media.ts`: ảnh đại diện, media được xác nhận theo chương trình, video thực hành, alt text, caption, điểm crop và đường dẫn nguồn.
 - `lib/leads.ts`: validation và whitelist chương trình dùng chung; `lib/lead-attribution.ts`: UTM của phiên, không lưu dữ liệu lead.
 - `app/api/leads/route.ts`, `lib/server/`: validate request, xác thực Service Account và append qua thư viện chính thức `@googleapis/sheets`.
 - `public/images/`: ảnh tối ưu từ nguồn được cung cấp; bản gốc giữ nguyên trong `source/` và `LogoSTEM.png`.
 
 Font Be Vietnam Pro self-hosted qua package `@fontsource`. Hình minh họa SVG chỉ mô tả khái niệm, không phải ảnh thiết bị thật. Ảnh hoạt động không được gán cho khóa học cụ thể chưa xác nhận.
 
-Gallery “Hoạt động tại STEM Fighters” dùng 6 ảnh, 3 cột trên tablet/desktop và 2 cột trên mobile. Các ảnh là tư liệu hoạt động chung, không đại diện cho một sự kiện duy nhất; tên thư mục gốc `source/workshop/` không phải nhãn sự kiện trên website. Bảy ảnh được chọn từ thư mục này đã chuyển thành WebP (cạnh dài tối đa 1280px, quality 82, bỏ metadata), giữ nguyên bản gốc. `next/image` tiếp tục tối ưu kích thước theo màn hình và tải lazy dưới hero. Không thêm lightbox hoặc nút ảnh giả.
+Gallery “Hoạt động tại STEM Fighters” giữ 6 ảnh, 3 cột trên tablet/desktop và 2 cột trên mobile. Hai ảnh được thay bằng hoạt động robot trên sa bàn và thực hành điện tử từ thư mục `source/anhhoatdong/`; bốn ảnh còn lại vẫn là hoạt động chung. Không trình bày như một sự kiện duy nhất. Ảnh WebP có cạnh dài tối đa 1280px, quality 82, bỏ metadata; giữ nguyên nguồn. `next/image` tối ưu kích thước theo màn hình và tải lazy dưới hero.
 
-“Học để làm được” dùng ảnh lắp ráp chung; các ví dụ cụ thể từ giáo trình nằm ở course page tương ứng. “Cách học” giữ nguyên bốn bước và dùng lại hai ảnh lớp học/lập trình có sẵn. Giữ nguyên ảnh hero, không suy diễn ảnh thuộc khóa học nào. Card homepage được thu gọn; artwork SVG hiện có được dùng trên hero của từng course page.
+“Học để làm được”, “Cách học” và ảnh hero homepage giữ nguyên. Bốn card có cùng khung đại diện cao 140px để giữ trọng lượng thị giác ngang nhau. Kiểm tra độ dài homepage cho phép phần tăng có chủ đích 156px mỗi hàng card (ảnh 140px + gap 16px), cộng tối đa một dòng tiêu đề mỗi hàng cho tên mô tả dài hơn đã được duyệt. Không thu nhỏ chữ hay cắt tên khóa để ép chiều cao; các section khác không được kéo dài để bù.
+
+### Ảnh đại diện và video thực hành
+
+- **Tư duy lập trình STEM**: ảnh robot Rio trên sa bàn làm đại diện; ảnh học viên thao tác và video trong phần thực hành, tách khỏi ví dụ giáo trình.
+- **Điện tử & Robot thông minh**: ảnh học viên và người hướng dẫn với mạch điện làm đại diện; video thao tác mô hình trong phần thực hành.
+- **Kỹ sư Công nghệ STEM nhí** và **Lập trình sáng tạo STEM**: giữ SVG minh họa hiện có, không gán ảnh lớp học chưa xác nhận. Hai PNG chia sẻ được render từ chính SVG đó.
+- `ProgramVisual` dùng chung ở homepage, hero khóa học và card chương trình khác. Open Graph/Twitter dùng ảnh đại diện tương ứng, không dùng ảnh lớp học chung cho chương trình chưa xác nhận.
+- Video Rio lấy giây 40–60 của bản gốc (20 giây); Điện tử giữ clip 6 giây. MP4 H.264, chiều rộng 960px, pixel vuông, CRF 27, `yuv420p`, faststart, không âm thanh/metadata. Tổng hai clip khoảng 1,5 MiB, không đưa video Rio gốc 35 MB lên public.
+- `PracticeVideo` chỉ gán `src` sau click/Enter; không request MP4 trước tương tác, không autoplay/loop. Có poster lazy, controls gốc, playsInline trên mobile, mô tả nội dung cho screen reader và thông báo lỗi kèm link file trực tiếp. Không có lời thoại nên bản web không cần phụ đề lời nói; nguồn video đầy đủ vẫn giữ nguyên.
+- Ảnh/video riêng từng khóa chỉ dựa trên thư mục do chủ website xác nhận. Không suy diễn thành tích, tên dự án, ngày diễn ra hoặc gán clip cho một bài học cụ thể.
+- `tests/course-media.spec.ts` kiểm tra file nguồn, ngân sách ảnh/video, trì hoãn tải, play/pause, bàn phím, lỗi video, ảnh OG và sáu độ rộng 360–1920px.
 
 ## Tương tác trong phase này
 
@@ -84,16 +95,20 @@ Gallery “Hoạt động tại STEM Fighters” dùng 6 ảnh, 3 cột trên ta
 - Số điện thoại được ghi rõ “Gọi điện”; “Chat Zalo” và Facebook chính thức là lựa chọn liên hệ riêng, không thay đích form của CTA học thử.
 - Bản đồ Google Maps nhỏ tại khối liên hệ dùng chung địa chỉ với link chỉ đường, tải lazy qua iframe. Click hoặc dùng bàn phím trên bản đồ mở Google Maps ở tab mới; bản đồ nằm cạnh địa chỉ trên desktop và bên dưới ở màn hình hẹp. Cần kết nối tới Google để tải bản đồ; link chỉ đường vẫn dùng được nếu embed bị chặn.
 - `TrialRegistrationForm` là nội dung mặc định của `RegistrationSection`. Thành công chỉ sau append được xác nhận; lỗi giữ nguyên dữ liệu. Có honeypot, khóa submit, kiểm tra origin và giới hạn payload. Không ghi lead vào storage của browser.
-- Học phí Rio và Starter Kit theo ảnh trong `source/khoahoc/`; Điện tử theo hai trang PDF cùng thư mục. Tư duy logic & Lập trình có 6 khóa, mỗi khóa 16 buổi và giá 3.500.000 đồng/khóa như trước. Điện tử tách “Khóa học từ 3.500.000đ” và “Chuyên đề từ 3.000.000đ”; toàn bộ 14 khóa/chuyên đề giữ nguyên trong 4 accordion, mặc định đóng trên mọi viewport.
-- Điện tử cơ bản dành cho học viên 7–15 tuổi, theo xác nhận của chủ website. Lịch học thử dùng wording “Liên hệ STEM Fighters để được tư vấn lịch học thử phù hợp.” Dữ liệu học phí chưa đủ sẽ được ẩn; không hiện placeholder. Không tự suy đoán số buổi Điện tử, lịch học, chi phí học thử hoặc thiết bị/học liệu. Hotline và địa chỉ đã được cung cấp; email chưa có nên chưa hiển thị.
+- Học phí Rio và Starter Kit theo ảnh trong `source/khoahoc/`; Điện tử theo hai trang PDF cùng thư mục. Lập trình sáng tạo STEM có 6 khóa, mỗi khóa 16 buổi và giá 3.500.000 đồng/khóa như trước. Điện tử tách “Khóa học từ 3.500.000đ” và “Chuyên đề từ 3.000.000đ”; toàn bộ 14 khóa/chuyên đề giữ nguyên trong 4 accordion, mặc định đóng trên mọi viewport.
+- Điện tử & Robot thông minh dành cho học viên 7–15 tuổi, theo xác nhận của chủ website. Lịch học thử dùng wording “Liên hệ STEM Fighters để được tư vấn lịch học thử phù hợp.” Dữ liệu học phí chưa đủ sẽ được ẩn; không hiện placeholder. Không tự suy đoán số buổi Điện tử, lịch học, chi phí học thử hoặc thiết bị/học liệu. Hotline và địa chỉ đã được cung cấp; email chưa có nên chưa hiển thị.
 - Lịch trình và sản phẩm trong giáo trình không được trình bày như lịch tuyển sinh hoặc thành tích học viên.
 
 ## Course URLs & SEO
 
-- Rio: `/khoa-hoc/rio`
-- Starter Kit: `/khoa-hoc/starter-kit`
-- Tư duy logic & Lập trình: `/khoa-hoc/tu-duy-logic-lap-trinh`
-- Điện tử cơ bản: `/khoa-hoc/dien-tu-co-ban`
+- Tư duy lập trình STEM: `/khoa-hoc/tu-duy-lap-trinh-stem`
+- Kỹ sư Công nghệ STEM nhí: `/khoa-hoc/ky-su-cong-nghe-stem-nhi`
+- Lập trình sáng tạo STEM: `/khoa-hoc/lap-trinh-sang-tao-stem`
+- Điện tử & Robot thông minh: `/khoa-hoc/dien-tu-robot-thong-minh`
+
+Tên cũ không làm tên phụ trên card/tiêu đề/form. Tên thiết bị Rio và bài học gốc vẫn giữ trong nội dung giáo trình. `legacySlugs` redirect 308 trực tiếp từ `rio`, `kham-pha-robot`, `starter-kit`, `sang-tao-che-tao` sang URL mới, giữ query/UTM. `legacyNames` cho phép chuẩn hóa lead từ trang cũ đang mở/cache trước khi lưu; không sửa lead lịch sử. ID nội bộ và analytics (`rio`, `starter_kit`) giữ nguyên để không tách dữ liệu theo dõi.
+
+Hai tên còn lại cũng được cập nhật: “Tư duy logic & Lập trình” → “Lập trình sáng tạo STEM”; “Điện tử cơ bản” → “Điện tử & Robot thông minh”. URL `tu-duy-logic-lap-trinh` và `dien-tu-co-ban` redirect 308 tới `lap-trinh-sang-tao-stem` và `dien-tu-robot-thong-minh`. Tên cũ được API chuẩn hóa khi nhận lead; ID nội bộ `lap-trinh`/`dien-tu-co-ban` và mã tracking `logic_programming`/`basic_electronics` không đổi. Curriculum, ảnh/video, độ tuổi và học phí giữ nguyên.
 
 Mỗi URL được prerender bằng `generateStaticParams`, có title/description riêng, một H1, self-canonical, Open Graph/Twitter, FAQ riêng, breadcrumb và structured data `BreadcrumbList`. Không thêm rating/review hoặc Course schema thiếu dữ liệu. Slug không hợp lệ trả 404; không tạo route listing rỗng. `/sitemap.xml` gồm homepage và bốn khóa; `/robots.txt` cho phép crawl. Query UTM không xuất hiện trong canonical nhưng vẫn được giữ cho luồng lead hiện có.
 

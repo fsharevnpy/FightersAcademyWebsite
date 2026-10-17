@@ -46,7 +46,8 @@ export function validateLead(input: unknown): { success: true; data: LeadInput }
   if (!Number.isInteger(childAge) || childAge < leadLimits.minAge || childAge > leadLimits.maxAge) {
     errors.childAge = "Vui lòng chọn tuổi của bé từ 3 đến 18.";
   }
-  const program = typeof input.program === "string" ? input.program : "";
+  const submittedProgram = typeof input.program === "string" ? input.program : "";
+  const program = programs.find(program => program.legacyNames?.includes(submittedProgram))?.name ?? submittedProgram;
   if (!leadPrograms.includes(program)) errors.program = "Vui lòng chọn chương trình quan tâm.";
   const sourcePage = typeof input.sourcePage === "string" ? cleanText(input.sourcePage) : "";
   if (!sourcePage.startsWith("/") || sourcePage.startsWith("//") || /[?#\\]/.test(sourcePage) || typeof input.sourcePage !== "string" || input.sourcePage.length > leadLimits.sourcePage) {

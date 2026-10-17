@@ -17,10 +17,10 @@ test("course summaries derive from curriculum and omit unavailable fees", () => 
 test("program tuition matches supplied tables and programming course fees", async ({ page }) => {
   await page.goto("/");
   const expectedPrograms = [
-    { name: "Rio", summary: "Từ 2.900.000", prices: ["2.900.000", "2.900.000", "3.100.000", "3.100.000", "3.100.000"], sessions: "12 buổi / khóa" },
-    { name: "Starter Kit", summary: "Từ 3.200.000", prices: ["3.200.000", "3.200.000", "3.200.000", "3.500.000", "3.500.000", "3.500.000"], sessions: "16 buổi / khóa" },
-    { name: "Tư duy logic & Lập trình", summary: "3.500.000", prices: Array(6).fill("3.500.000"), sessions: "16 buổi / khóa" },
-    { name: "Điện tử cơ bản", summary: "Khóa học từ 3.500.000", prices: ["3.500.000", "3.800.000", "3.800.000", "3.500.000", "3.800.000", "4.100.000", "4.100.000", "3.500.000", "3.800.000", "4.100.000", "4.400.000", "3.000.000", "3.300.000", "3.600.000"], sessions: null },
+    { name: "Tư duy lập trình STEM", summary: "Từ 2.900.000", prices: ["2.900.000", "2.900.000", "3.100.000", "3.100.000", "3.100.000"], sessions: "12 buổi / khóa" },
+    { name: "Kỹ sư Công nghệ STEM nhí", summary: "Từ 3.200.000", prices: ["3.200.000", "3.200.000", "3.200.000", "3.500.000", "3.500.000", "3.500.000"], sessions: "16 buổi / khóa" },
+    { name: "Lập trình sáng tạo STEM", summary: "3.500.000", prices: Array(6).fill("3.500.000"), sessions: "16 buổi / khóa" },
+    { name: "Điện tử & Robot thông minh", summary: "Khóa học từ 3.500.000", prices: ["3.500.000", "3.800.000", "3.800.000", "3.500.000", "3.800.000", "4.100.000", "4.100.000", "3.500.000", "3.800.000", "4.100.000", "4.400.000", "3.000.000", "3.300.000", "3.600.000"], sessions: null },
   ];
   for (const program of expectedPrograms) {
     await page.goto("/");
@@ -32,7 +32,7 @@ test("program tuition matches supplied tables and programming course fees", asyn
     await expect(curriculum.locator(".module-tuition")).toContainText(program.prices);
     await expect(curriculum.locator(".module-sessions")).toHaveCount(program.sessions ? program.prices.length : 0);
     if (program.sessions) await expect(curriculum.locator(".module-sessions")).toHaveText(program.prices.map(() => program.sessions!));
-    if (program.name === "Điện tử cơ bản") {
+    if (program.name === "Điện tử & Robot thông minh") {
       await expect(curriculum.locator(".module-tuition small").filter({ hasText: "/ chuyên đề" })).toHaveCount(3);
       await expect(curriculum.locator(".module-group").filter({ hasText: "Khóa 2+" })).toHaveCount(1);
       await expect(curriculum.locator(".module-group").filter({ hasText: "Khóa 3+" })).toHaveCount(2);
@@ -48,7 +48,7 @@ test("homepage loads all four programs without overflow or broken images", async
   await expect(page).toHaveTitle(/STEM Fighters/);
   await expect(page.locator("h1")).toHaveCount(1);
   await expect(page.locator(".program-card")).toHaveCount(4);
-  for (const name of ["Rio", "Starter Kit", "Tư duy logic & Lập trình", "Điện tử cơ bản"]) {
+  for (const name of ["Tư duy lập trình STEM", "Kỹ sư Công nghệ STEM nhí", "Lập trình sáng tạo STEM", "Điện tử & Robot thông minh"]) {
     await expect(page.locator(".program-card").getByRole("heading", { name, exact: true })).toBeVisible();
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
@@ -92,7 +92,7 @@ test("FAQ reveals answers and trial CTAs reach the registration form", async ({ 
   await page.goto("/");
   const question = page.getByText("Con chưa từng học STEM hoặc lập trình thì nên bắt đầu từ đâu?", { exact: true });
   await question.click();
-  await expect(page.locator("details[open]")).toContainText("Không mặc định mọi trẻ đều phải bắt đầu từ Rio.");
+  await expect(page.locator("details[open]")).toContainText("Không có một điểm bắt đầu chung cho tất cả trẻ.");
   await expect(page.locator(".faq-list details")).toHaveCount(7);
   await expect(page.locator("#hero-actions").getByRole("link", { name: "Đăng ký học thử" })).toHaveAttribute("href", "#dang-ky");
   await page.getByRole("heading", { name: "Thông tin đăng ký học thử" }).scrollIntoViewIfNeeded();

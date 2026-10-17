@@ -8,6 +8,8 @@ export type Program = {
   slug: string;
   number: string;
   name: string;
+  legacyNames?: string[];
+  legacySlugs?: string[];
   category: string;
   description: string;
   summary: string;
@@ -25,8 +27,8 @@ export type Program = {
 
 export const programs: Program[] = [
   {
-    id: "rio", slug: "rio", number: "01", name: "Rio", category: "KHÁM PHÁ & ROBOT",
-    description: "Cho trẻ làm quen tư duy thuật toán qua điều khiển robot, khám phá đường đi và lập trình kéo thả.",
+    id: "rio", slug: "tu-duy-lap-trinh-stem", number: "01", name: "Tư duy lập trình STEM", legacyNames: ["Rio", "Khám phá robot"], legacySlugs: ["rio", "kham-pha-robot"], category: "KHÁM PHÁ & ROBOT",
+    description: "Cho trẻ làm quen tư duy thuật toán qua điều khiển robot Rio, khám phá đường đi và lập trình kéo thả.",
     summary: "Khám phá thuật toán qua robot, đường đi và lập trình kéo thả.",
     audience: "5–7 tuổi · tham khảo",
     tags: ["Robot", "Tư duy thuật toán", "Kéo thả"],
@@ -43,13 +45,13 @@ export const programs: Program[] = [
     fit: "Dành cho trẻ thích khám phá qua robot và những hoạt động trực quan. Khóa đầu không yêu cầu kiến thức trước; trẻ cần có thể nghe và làm theo hướng dẫn 1–2 bước.",
     skills: ["Sắp xếp chuỗi lệnh và dự đoán đường đi của robot.", "Làm quen lập trình kéo thả, dò line và né vật cản.", "Thử cách điều khiển, quan sát kết quả và điều chỉnh thuật toán."],
     faqs: [
-      { question: "Con cần biết lập trình trước khi học Rio không?", answer: "Khóa đầu của Rio không yêu cầu kiến thức trước; trẻ cần có thể nghe và làm theo hướng dẫn 1–2 bước. Trung tâm tư vấn điểm bắt đầu dựa trên khả năng hiện tại của con." },
-      { question: "Rio có sử dụng màn hình ngay từ đầu không?", answer: "Hai khóa đầu ưu tiên thẻ lệnh, nút nhấn và hoạt động không màn hình cá nhân. Từ khóa 3, giáo trình giới thiệu lập trình kéo thả theo cặp, xen kẽ hoạt động với robot thật." },
+      { question: "Con cần biết lập trình trước khi học không?", answer: "Khóa đầu không yêu cầu kiến thức trước; trẻ cần có thể nghe và làm theo hướng dẫn 1–2 bước. Trung tâm tư vấn điểm bắt đầu dựa trên khả năng hiện tại của con." },
+      { question: "Chương trình có sử dụng màn hình ngay từ đầu không?", answer: "Hai khóa đầu ưu tiên thẻ lệnh, nút nhấn và hoạt động không màn hình cá nhân. Từ khóa 3, giáo trình giới thiệu lập trình kéo thả theo cặp, xen kẽ hoạt động với robot thật." },
       { question: "Trẻ khám phá thuật toán với Rio như thế nào?", answer: "Trẻ sắp xếp chuỗi lệnh, dự đoán đường đi rồi chạy thử với robot. Lộ trình mở rộng sang kéo thả, dò line, né vật cản và sáng tạo thuật toán." },
     ],
   },
   {
-    id: "starter-kit", slug: "starter-kit", number: "02", name: "Starter Kit", category: "CHẾ TẠO & SÁNG TẠO",
+    id: "starter-kit", slug: "ky-su-cong-nghe-stem-nhi", number: "02", name: "Kỹ sư Công nghệ STEM nhí", legacyNames: ["Starter Kit", "Sáng tạo & Chế tạo"], legacySlugs: ["starter-kit", "sang-tao-che-tao"], category: "CHẾ TẠO & SÁNG TẠO",
     description: "Cho trẻ khám phá chế tạo sản phẩm, kết hợp lập trình Yolo:Bit, cảm biến và cơ khí.",
     summary: "Chế tạo sản phẩm với Yolo:Bit, cảm biến, lập trình và cơ khí.",
     audience: "7–12 tuổi · tùy cấp độ",
@@ -65,16 +67,16 @@ export const programs: Program[] = [
     example: { title: "Ngôi nhà biết phản hồi", description: "Kết hợp cảm biến và thiết bị để tạo mô hình nhà có các chức năng tự động." },
     source: "Starter_Kit_STEM_6_khoa_96.xlsx",
     tuitionSource: "source/khoahoc/Stem Starter Kit.jpg",
-    fit: "Dành cho trẻ thích chế tạo và tìm hiểu cách một sản phẩm hoạt động. Theo giáo trình, đầu vào có thể là hoàn thành Rio hoặc đã nhận biết chuỗi lệnh, nút và biểu tượng.",
+    fit: "Dành cho trẻ thích chế tạo và tìm hiểu cách một sản phẩm hoạt động. Theo giáo trình, đầu vào có thể là hoàn thành Tư duy lập trình STEM hoặc đã nhận biết chuỗi lệnh, nút và biểu tượng.",
     skills: ["Kết hợp lập trình Yolo:Bit với cảm biến và thiết bị.", "Khám phá mô hình nhà thông minh, cơ khí và robot.", "Lắp ráp, chạy thử và điều chỉnh ý tưởng chế tạo."],
     faqs: [
-      { question: "Có phải hoàn thành Rio mới học được Starter Kit?", answer: "Không bắt buộc. Theo giáo trình, đầu vào Starter Kit có thể là hoàn thành Rio hoặc đã nhận biết chuỗi lệnh, nút và biểu tượng. Cấp độ phù hợp cần được xác định theo năng lực của từng trẻ." },
-      { question: "Starter Kit dùng Yolo:Bit và cảm biến để làm gì?", answer: "Giáo trình đi từ làm quen lập trình Yolo:Bit đến cảm biến, mô hình nhà thông minh, cơ khí, robot và sáng chế. Ví dụ thực hành là kết hợp cảm biến và thiết bị để mô hình phản hồi tự động." },
-      { question: "Starter Kit có chỉ học trên máy tính không?", answer: "Chương trình kết hợp lập trình với thực hành lắp ráp và thử nghiệm. Các khóa Sensor Lab, Smart Home Engineer, Mechanical Maker và Robotics Engineer mở rộng việc học qua mô hình và thiết bị." },
+      { question: "Con cần có nền tảng gì trước khi tham gia?", answer: "Theo giáo trình, đầu vào có thể là hoàn thành Tư duy lập trình STEM hoặc đã nhận biết chuỗi lệnh, nút và biểu tượng. Cấp độ phù hợp cần được xác định theo năng lực của từng trẻ." },
+      { question: "Chương trình dùng Yolo:Bit và cảm biến để làm gì?", answer: "Giáo trình đi từ làm quen lập trình Yolo:Bit đến cảm biến, mô hình nhà thông minh, cơ khí, robot và sáng chế. Ví dụ thực hành là kết hợp cảm biến và thiết bị để mô hình phản hồi tự động." },
+      { question: "Chương trình có chỉ học trên máy tính không?", answer: "Chương trình kết hợp lập trình với thực hành lắp ráp và thử nghiệm. Các khóa Sensor Lab, Smart Home Engineer, Mechanical Maker và Robotics Engineer mở rộng việc học qua mô hình và thiết bị." },
     ],
   },
   {
-    id: "lap-trinh", slug: "tu-duy-logic-lap-trinh", number: "03", name: "Tư duy logic & Lập trình", category: "LOGIC & THUẬT TOÁN",
+    id: "lap-trinh", slug: "lap-trinh-sang-tao-stem", number: "03", name: "Lập trình sáng tạo STEM", legacyNames: ["Tư duy logic & Lập trình"], legacySlugs: ["tu-duy-logic-lap-trinh"], category: "LOGIC & THUẬT TOÁN",
     description: "Cho trẻ xây nền tảng tư duy trước khi viết chương trình: nhận biết quy luật, suy luận và sắp xếp trình tự.",
     summary: "Xây nền tảng logic qua quy luật, trình tự và suy luận thuật toán.",
     audience: "5–7 tuổi · theo giáo trình",
@@ -99,7 +101,7 @@ export const programs: Program[] = [
     ],
   },
   {
-    id: "dien-tu-co-ban", slug: "dien-tu-co-ban", number: "04", name: "Điện tử cơ bản", category: "MẠCH ĐIỆN & KỸ THUẬT",
+    id: "dien-tu-co-ban", slug: "dien-tu-robot-thong-minh", number: "04", name: "Điện tử & Robot thông minh", legacyNames: ["Điện tử cơ bản"], legacySlugs: ["dien-tu-co-ban"], category: "MẠCH ĐIỆN & KỸ THUẬT",
     description: "Cho trẻ khám phá mạch điện và mô hình đơn giản, tiến tới robot, lập trình nhúng và chuyên đề công nghệ.",
     summary: "Từ mạch điện, linh kiện đến robot, lập trình nhúng và công nghệ.",
     audience: "7–15 tuổi", levelCount: 4,
@@ -186,11 +188,11 @@ export function getProgramModuleGroups(program: Program) {
 }
 
 export const faqs: FAQ[] = [
-  { question: "Con chưa từng học STEM hoặc lập trình thì nên bắt đầu từ đâu?", answer: "Hãy đối chiếu độ tuổi, nền tảng, khả năng hiện tại và sở thích của con với từng chương trình. Rio khám phá qua robot; Starter Kit thiên về chế tạo; Tư duy logic & Lập trình xây nền tảng suy luận; Điện tử cơ bản tìm hiểu mạch điện và kỹ thuật. Không mặc định mọi trẻ đều phải bắt đầu từ Rio." },
-  { question: "Rio và Tư duy logic & Lập trình khác nhau như thế nào?", answer: "Rio giúp trẻ khám phá thuật toán qua robot, điều khiển đường đi và lập trình kéo thả. Tư duy logic & Lập trình tập trung vào quy luật, trình tự, suy luận và nền tảng thuật toán. Hai hướng khám phá khác nhau, không phải chương trình nào tốt hơn." },
-  { question: "Starter Kit và Điện tử cơ bản khác nhau như thế nào?", answer: "Starter Kit kết hợp Yolo:Bit, cảm biến, cơ khí và lập trình để chế tạo sản phẩm. Điện tử cơ bản đi từ mạch điện, linh kiện và mô hình tới robot, lập trình nhúng và chuyên đề công nghệ. Hãy chọn theo sở thích và nền tảng của con." },
-  { question: "Con 7–12 tuổi nên chọn Starter Kit hay Điện tử cơ bản?", answer: "Độ tuổi là một yếu tố, không phải tiêu chí duy nhất. Sở thích chế tạo, tìm hiểu mạch điện, kinh nghiệm và mục tiêu học giúp xác định hướng phù hợp. Phụ huynh có thể đăng ký học thử hoặc trao đổi với STEM Fighters để được tư vấn điểm bắt đầu.", trial: true },
-  { question: "Trẻ có sử dụng màn hình trong buổi học không?", answer: "Tùy chương trình và cấp độ, trẻ kết hợp hoạt động với robot, linh kiện, mô hình, bài tập tư duy và lập trình. Rio có hoạt động trực quan trước khi làm quen kéo thả; Starter Kit và Điện tử cơ bản kết hợp thiết bị với lập trình; Tư duy logic & Lập trình chú trọng quy luật và suy luận." },
-  { question: "Có bắt buộc học các chương trình theo thứ tự không?", answer: "Không có một thứ tự chung cho tất cả trẻ. Chẳng hạn, giáo trình Starter Kit cho phép đầu vào từ Rio hoặc nền tảng nhận biết chuỗi lệnh, nút và biểu tượng. Chương trình và cấp độ phù hợp cần dựa trên độ tuổi, nền tảng và khả năng hiện tại của con." },
+  { question: "Con chưa từng học STEM hoặc lập trình thì nên bắt đầu từ đâu?", answer: "Hãy đối chiếu độ tuổi, nền tảng, khả năng hiện tại và sở thích của con với từng chương trình. Tư duy lập trình STEM khám phá qua robot; Kỹ sư Công nghệ STEM nhí thiên về chế tạo; Lập trình sáng tạo STEM xây nền tảng suy luận; Điện tử & Robot thông minh tìm hiểu mạch điện và kỹ thuật. Không có một điểm bắt đầu chung cho tất cả trẻ." },
+  { question: "Hai chương trình về tư duy lập trình khác nhau thế nào?", answer: "Tư duy lập trình STEM giúp trẻ khám phá thuật toán qua robot, điều khiển đường đi và lập trình kéo thả. Lập trình sáng tạo STEM tập trung vào quy luật, trình tự, suy luận và nền tảng thuật toán. Hai hướng khám phá khác nhau, không phải chương trình nào tốt hơn." },
+  { question: "Chế tạo sản phẩm khác học điện tử cơ bản thế nào?", answer: "Kỹ sư Công nghệ STEM nhí kết hợp Yolo:Bit, cảm biến, cơ khí và lập trình để chế tạo sản phẩm. Điện tử & Robot thông minh đi từ mạch điện, linh kiện và mô hình tới robot, lập trình nhúng và chuyên đề công nghệ. Hãy chọn theo sở thích và nền tảng của con." },
+  { question: "Trẻ 7–12 tuổi nên chọn chương trình nào?", answer: "Kỹ sư Công nghệ STEM nhí và Điện tử & Robot thông minh đều có độ tuổi phù hợp trong khoảng này. Độ tuổi là một yếu tố, không phải tiêu chí duy nhất. Sở thích chế tạo, tìm hiểu mạch điện, kinh nghiệm và mục tiêu học giúp xác định hướng phù hợp. Phụ huynh có thể đăng ký học thử hoặc trao đổi với STEM Fighters để được tư vấn điểm bắt đầu.", trial: true },
+  { question: "Trẻ có sử dụng màn hình trong buổi học không?", answer: "Tùy chương trình và cấp độ, trẻ kết hợp hoạt động với robot, linh kiện, mô hình, bài tập tư duy và lập trình. Tư duy lập trình STEM có hoạt động trực quan trước khi làm quen kéo thả; Kỹ sư Công nghệ STEM nhí và Điện tử & Robot thông minh kết hợp thiết bị với lập trình; Lập trình sáng tạo STEM chú trọng quy luật và suy luận." },
+  { question: "Có bắt buộc học các chương trình theo thứ tự không?", answer: "Không có một thứ tự chung cho tất cả trẻ. Chẳng hạn, giáo trình Kỹ sư Công nghệ STEM nhí cho phép đầu vào từ Tư duy lập trình STEM hoặc nền tảng nhận biết chuỗi lệnh, nút và biểu tượng. Chương trình và cấp độ phù hợp cần dựa trên độ tuổi, nền tảng và khả năng hiện tại của con." },
   { question: "Buổi học thử diễn ra như thế nào?", answer: trialContact.schedule, trial: true },
 ];

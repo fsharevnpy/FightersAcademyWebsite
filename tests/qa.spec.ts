@@ -64,13 +64,13 @@ test("QA: keyboard course navigation, FAQ focus and hover", async ({ page }) => 
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Chuyển đến nội dung chính" })).toBeFocused();
   await page.keyboard.press("Enter");
-  const trigger = page.getByRole("link", { name: "Xem chi tiết chương trình Starter Kit", exact: true });
+  const trigger = page.getByRole("link", { name: "Xem chi tiết chương trình Kỹ sư Công nghệ STEM nhí", exact: true });
   await trigger.focus();
   expect(await trigger.evaluate(el => getComputedStyle(el).outlineStyle)).toBe("solid");
   await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(/\/khoa-hoc\/starter-kit$/);
-  await expect(page.getByRole("heading", { level: 1, name: "Starter Kit", exact: true })).toBeVisible();
-  await expect(page.getByLabel("Chương trình quan tâm")).toHaveValue("Starter Kit");
+  await expect(page).toHaveURL(/\/khoa-hoc\/ky-su-cong-nghe-stem-nhi$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Kỹ sư Công nghệ STEM nhí", exact: true })).toBeVisible();
+  await expect(page.getByLabel("Chương trình quan tâm")).toHaveValue("Kỹ sư Công nghệ STEM nhí");
   await page.getByRole("link", { name: "Về trang chủ", exact: true }).focus();
   await page.keyboard.press("Enter");
   await expect(page.locator(".program-card")).toHaveCount(4);

@@ -1,4 +1,81 @@
-// General activity media, not evidence of a specific course or a single event.
+import type { ProgramId } from "./programs";
+
+const rioPracticePhoto = {
+  src: "/images/activity-rio-practice.webp",
+  original: "source/anhhoatdong/rio/1792209807890_3350274012594387389_3350274012594387389_6f612b7d42a19e0ffbc8efaeaa9fccbd.jpg",
+  alt: "Hai học viên thao tác với robot Rio màu xanh trên sa bàn",
+  caption: "Thực hành cùng robot",
+  position: "50% 48%",
+};
+const electronicsPhoto = {
+  src: "/images/activity-electronics-guidance.webp",
+  original: "source/anhhoatdong/dientucoban/1785038271265_4580753154693219409_g3873433740052077826_c638595743fa437873d27195d3edbf64.jpg",
+  alt: "Học viên và người hướng dẫn trước máy tính, với mạch điện nối dây trên bàn",
+  caption: "Thực hành điện tử",
+  position: "50% 50%",
+  width: 1280,
+  height: 960,
+};
+
+export type CourseVideo = {
+  src: string;
+  original: string;
+  poster: string;
+  caption: string;
+  description: string;
+  duration: number;
+};
+type CourseMedia = {
+  representative: { src: string; alt: string; width: number; height: number; original: string };
+  practicePhoto?: typeof rioPracticePhoto;
+  video: CourseVideo;
+};
+
+// Only these two courses have owner-confirmed photographs; other courses retain their illustrations.
+export const courseMedia: Partial<Record<ProgramId, CourseMedia>> = {
+  rio: {
+    representative: {
+      src: "/images/course-rio-board.webp",
+      original: "source/anhhoatdong/rio/robot-giao-duc-mam-non-rio-tren-ban-do.jpg",
+      alt: "Robot Rio màu xanh với các nút lệnh trên sa bàn nhiều màu",
+      width: 600, height: 600,
+    },
+    practicePhoto: rioPracticePhoto,
+    video: {
+      src: "/videos/rio-practice.mp4",
+      original: "source/anhhoatdong/rio/1791689462617_281260927700765988_g3873433740052077826.mp4",
+      poster: "/images/rio-practice-poster.webp",
+      caption: "Thực hành điều khiển robot trên sa bàn",
+      description: "Robot Rio di chuyển trên sa bàn giữa các vật đặt trên đường đi; người học thao tác với robot. Video minh họa không có âm thanh.",
+      duration: 20,
+    },
+  },
+  "dien-tu-co-ban": {
+    representative: electronicsPhoto,
+    video: {
+      src: "/videos/electronics-practice.mp4",
+      original: "source/anhhoatdong/dientucoban/1792256970700_281260927700765988_802952788732364519.mp4",
+      poster: "/images/electronics-practice-poster.webp",
+      caption: "Thử nghiệm với mạch điện và mô hình",
+      description: "Người học đưa một khối lắp ghép tới mô hình có linh kiện và dây nối trên bàn, quan sát mô hình rồi tiếp tục thao tác. Video minh họa không có âm thanh.",
+      duration: 6,
+    },
+  },
+};
+
+export const courseIllustrations = {
+  "starter-kit": { src: "/images/course-starter-kit.png", width: 1200, height: 900, alt: "Minh họa bộ điều khiển và kết nối linh kiện" },
+  "lap-trinh": { src: "/images/course-logic-programming.png", width: 1200, height: 900, alt: "Minh họa cửa sổ lập trình và ký hiệu lệnh" },
+};
+
+export function getCourseRepresentative(id: ProgramId) {
+  if (id === "starter-kit" || id === "lap-trinh") return courseIllustrations[id];
+  const photo = courseMedia[id]?.representative;
+  if (!photo) throw new Error(`Missing course representative: ${id}`);
+  return photo;
+}
+
+// Photos from different classes and activities, not a single event.
 export const activityPhotos = [
   {
     src: "/images/activity-learning-together.webp",
@@ -7,13 +84,7 @@ export const activityPhotos = [
     caption: "Học tập thông qua trải nghiệm",
     position: "50% 50%",
   },
-  {
-    src: "/images/activity-mentor-conversation.webp",
-    original: "source/workshop/702501512_122105130579301313_2103041151709407679_n.jpg",
-    alt: "Người hướng dẫn ngồi trò chuyện cùng học viên bên máy tính xách tay",
-    caption: "Đồng hành cùng học viên",
-    position: "50% 50%",
-  },
+  electronicsPhoto,
   {
     src: "/images/activity-built-models.webp",
     original: "source/workshop/702857751_122105127435301313_2668905042239233707_n.jpg",
@@ -35,13 +106,7 @@ export const activityPhotos = [
     caption: "Lắng nghe và cùng khám phá",
     position: "50% 50%",
   },
-  {
-    src: "/images/activity-technology-exploration.webp",
-    original: "source/workshop/703397066_122105131401301313_422917651584027626_n.jpg",
-    alt: "Học viên áo đỏ cầm điện thoại trong lúc các bạn cùng quan sát",
-    caption: "Khám phá công nghệ cùng bạn",
-    position: "50% 10%",
-  },
+  rioPracticePhoto,
 ];
 
 export const learningExamplePhoto = {

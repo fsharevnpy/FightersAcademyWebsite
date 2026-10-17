@@ -133,7 +133,7 @@ test("invalid, rejected, malformed and network-failed submissions never emit sub
     if (requests === 3) return route.fulfill({ contentType: "application/json", body: "not json" });
     return route.abort("failed");
   });
-  await page.goto("/khoa-hoc/rio");
+  await page.goto("/khoa-hoc/tu-duy-lap-trinh-stem");
   const submit = page.getByRole("button", { name: "Nhận tư vấn & lịch học thử" });
   await submit.click();
   expect(requests).toBe(0);
@@ -153,7 +153,7 @@ test("a broken external dataLayer push cannot break CTA navigation or lead succe
   page.on("console", message => { if (message.type() === "warning") warnings.push(message.text()); });
   await page.addInitScript(() => { window.dataLayer = []; window.dataLayer.push = () => { throw new Error("Test: broken external tag"); }; });
   await page.route("**/api/leads", route => route.fulfill({ json: { success: true } }));
-  await page.goto("/khoa-hoc/rio");
+  await page.goto("/khoa-hoc/tu-duy-lap-trinh-stem");
   await page.locator("#hero-actions").getByRole("link", { name: "Đăng ký học thử" }).click();
   await expect(page.getByRole("form", { name: "Đăng ký học thử" })).toBeFocused();
   await fillForm(page);

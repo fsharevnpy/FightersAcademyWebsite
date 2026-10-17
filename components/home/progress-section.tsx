@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { BrainCircuit, Code2, Wrench, ScanSearch, MessagesSquare, ArrowUpRight } from "lucide-react";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { programs } from "@/content/programs";
 
 const items = [
   { icon: BrainCircuit, title: "Hiểu vấn đề", text: "Con có thể giải thích sản phẩm đang làm gì và vì sao?" },
@@ -11,7 +12,9 @@ const items = [
 ];
 
 export function ProgressSection() {
-  return <section className="section progress-section"><div className="container progress-grid"><div><SectionHeading eyebrow="NHÌN THẤY SỰ TIẾN BỘ" title="Điều quan trọng là\ncon tự làm được gì." description="Từ tiêu chí quan sát trong giáo trình Starter Kit: nhìn vào cách trẻ thực hành, giải thích và cải tiến — không chỉ sản phẩm cuối cùng." />
+  const program = programs.find(program => program.id === "starter-kit");
+  if (!program) throw new Error("Missing fabrication program.");
+  return <section className="section progress-section"><div className="container progress-grid"><div><SectionHeading eyebrow="NHÌN THẤY SỰ TIẾN BỘ" title="Điều quan trọng là\ncon tự làm được gì." description={`Theo giáo trình ${program.name}: quan sát cách trẻ thực hành, giải thích và cải tiến — không chỉ sản phẩm cuối cùng.`} />
     <figure className="progress-photo">
       <div className="progress-photo-frame"><Image src="/images/hands-on-building.webp" alt="Học viên tự tay ghép mô hình màu xanh bên khay linh kiện tại bàn thực hành" fill sizes="(min-width: 768px) 360px, (min-width: 520px) 480px, calc(100vw - 40px)" /></div>
       <figcaption>Tập trung vào từng chi tiết, tự tay thử từng cách làm.</figcaption>

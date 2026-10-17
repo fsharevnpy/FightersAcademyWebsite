@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArrowDown, ArrowUpRight, Check, Users } from "lucide-react";
 import { siteUrl, trialContact } from "@/content/contact";
@@ -7,7 +8,9 @@ import { getProgramBySlug, getProgramFAQs, getProgramPath, getProgramStructure, 
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { MobileCTA } from "@/components/layout/mobile-cta";
-import { ProgramArt } from "@/components/home/program-art";
+import { ProgramVisual } from "@/components/home/program-visual";
+import { PracticeVideo } from "@/components/home/practice-video";
+import { courseMedia, getCourseRepresentative } from "@/content/media";
 import { ProgramCurriculum } from "@/components/home/program-curriculum";
 import { FAQSection } from "@/components/home/faq-section";
 import { RegistrationSection } from "@/components/home/registration-section";
@@ -29,7 +32,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = `Khóa học ${program.name} cho trẻ ${program.audience.split(" · ")[0]} | STEM Fighters`;
   const description = `${program.description} Xem lộ trình, học phí từng khóa và đăng ký học thử tại STEM Fighters.`;
   const url = getProgramPath(program);
-  const images = [{ url: "/images/mentor-student.jpg", width: 1600, height: 1067, alt: "Hoạt động tại STEM Fighters" }];
+  const photo = getCourseRepresentative(program.id);
+  const images = [{ url: photo.src, width: photo.width, height: photo.height, alt: photo.alt }];
   return {
     title, description, alternates: { canonical: url }, robots: { index: true, follow: true },
     openGraph: { title, description, url, type: "website", locale: "vi_VN", siteName: "STEM Fighters", images },
@@ -41,6 +45,7 @@ export default async function CoursePage({ params }: Props) {
   const program = getProgramBySlug((await params).slug);
   if (!program) notFound();
   const tuition = getTuitionSummary(program);
+  const media = courseMedia[program.id];
   const breadcrumb = {
     "@context": "https://schema.org", "@type": "BreadcrumbList",
     itemListElement: [
@@ -66,12 +71,20 @@ export default async function CoursePage({ params }: Props) {
               {tuition && <p className="course-tuition"><span>Học phí</span><strong>{tuition}</strong></p>}
               <div id="hero-actions" className="hero-actions"><TrialCTA program={program.id} location="hero" /><ButtonLink href="#lo-trinh" variant="secondary">Xem lộ trình<ArrowDown size={18} aria-hidden="true" /></ButtonLink></div>
             </div>
-            <div className="course-art"><ProgramArt kind={program.id} /></div>
+            <div className="course-art"><ProgramVisual id={program.id} priority /></div>
           </div>
         </div>
       </section>
       <section className="section"><div className="container course-intro-grid">
-        <div><SectionHeading eyebrow="ĐIỂM BẮT ĐẦU" title="Chương trình phù hợp với ai?" description={program.fit} /><p className="course-age-note">Độ tuổi: {program.audience}. Trung tâm tư vấn cấp độ theo năng lực hiện tại của con.</p></div>
+        <div><SectionHeading eyebrow="ĐIỂM BẮT ĐẦU" title="Chương trình phù hợp với ai?" description={program.fit} /><p className="course-age-note">Độ tuổi: {program.audience}. Trung tâm tư vấn cấp độ theo năng lực hiện tại của con.</p>
+          {media && <div className="course-practice"><h3>Thực hành tại STEM Fighters</h3>
+            {media.practicePhoto && <figure className="course-practice-photo">
+              <div><Image src={media.practicePhoto.src} alt={media.practicePhoto.alt} fill sizes="(min-width: 768px) 260px, 220px" loading="lazy" style={{ objectPosition: media.practicePhoto.position }} /></div>
+              <figcaption>{media.practicePhoto.caption}</figcaption>
+            </figure>}
+            <PracticeVideo video={media.video} />
+          </div>}
+        </div>
         <div><h2>Trẻ sẽ học và thực hành gì?</h2><ul className="course-skills">{program.skills.map(skill => <li key={skill}><Check size={20} aria-hidden="true" /><span>{skill}</span></li>)}</ul>
           <article className="course-example"><p className="eyebrow">VÍ DỤ TỪ GIÁO TRÌNH</p><h3>{program.example.title}</h3><p>{program.example.description}</p><p className="course-note">Đây là ví dụ thực hành, không phải hồ sơ dự án học viên đã hoàn thành.</p></article>
         </div>
@@ -87,6 +100,7 @@ export default async function CoursePage({ params }: Props) {
       <section className="section"><div className="container">
         <SectionHeading eyebrow="CÁC HƯỚNG KHÁM PHÁ KHÁC" title="Khám phá chương trình khác" />
         <div className="related-programs">{programs.filter(other => other.id !== program.id).map(other => <article key={other.id}>
+          <ProgramVisual id={other.id} />
           <h3><Link href={getProgramPath(other)}>{other.name}</Link></h3><p className="program-age">{other.audience}</p><p>{other.summary}</p>
           <Link href={getProgramPath(other)} className="text-link" aria-label={`Xem chương trình ${other.name}`}>Xem chương trình<ArrowUpRight size={18} aria-hidden="true" /></Link>
         </article>)}</div>

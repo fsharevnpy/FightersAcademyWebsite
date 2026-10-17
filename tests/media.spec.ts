@@ -56,7 +56,8 @@ test("real learning photos stay separate from course curriculum examples", async
   for (const photo of learningProcessPhotos) {
     await expect(page.locator("#cach-hoc").getByRole("img", { name: photo.alt, exact: true })).toHaveAttribute("loading", "lazy");
   }
-  await expect(page.locator(".program-card img")).toHaveCount(0);
+  await expect(page.locator(".program-card img")).toHaveCount(2);
+  await expect(page.locator(".program-card .program-visual svg")).toHaveCount(2);
   await expect(page.locator(".hero img")).toHaveCount(1);
   await expect(page.locator(".hero img")).toHaveAttribute("loading", "eager");
   if (page.viewportSize()!.width >= 1024) {

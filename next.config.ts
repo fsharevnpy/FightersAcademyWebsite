@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { getProgramPath, programs } from "./content/programs";
 
 const nextConfig: NextConfig = {
   output: process.env.STEM_STANDALONE === "1" ? "standalone" : undefined,
@@ -17,7 +18,11 @@ const nextConfig: NextConfig = {
       ],
       destination: "https://stem.fightersacademy.com.vn/:path*",
       permanent: true,
-    }];
+    }, ...programs.flatMap(program => (program.legacySlugs ?? []).map(slug => ({
+      source: `/khoa-hoc/${slug}`,
+      destination: getProgramPath(program),
+      permanent: true,
+    })))];
   },
 };
 

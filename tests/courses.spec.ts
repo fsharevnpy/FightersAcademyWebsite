@@ -133,19 +133,26 @@ test("homepage is shorter and activities appear earlier at all required widths",
       sections: Array.from(document.querySelectorAll("main > section")).map(section => ({ name: section.id || section.className, height: Math.round(section.getBoundingClientRect().height) })),
     }));
     measured.push({ width: baseline.width, before: baseline, after: current });
-    expect.soft(current.height, `Homepage height at ${baseline.width}px`).toBeLessThan(baseline.height * .9);
-    expect.soft(current.activitiesTop, `Activity position at ${baseline.width}px`).toBeLessThan(baseline.activitiesTop * .85);
+    // The approved representative images add one 140px image + 16px gap per card row.
+    const imageRows = baseline.width < 768 ? 4 : baseline.width < 1280 ? 2 : 1;
+    const mediaAllowance = imageRows * 156;
+    // Approved descriptive names may wrap onto one extra line per equal-height card row.
+    const titleLineHeight = await page.locator(".program-card h3").first().evaluate(element => parseFloat(getComputedStyle(element).lineHeight));
+    const titleAllowance = imageRows * titleLineHeight;
+    // scrollHeight is an integer; compare against the same pixel rounding.
+    expect.soft(current.height, `Homepage height at ${baseline.width}px`).toBeLessThanOrEqual(Math.round(baseline.height * .9 + mediaAllowance + titleAllowance));
+    expect.soft(current.activitiesTop, `Activity position at ${baseline.width}px`).toBeLessThan(baseline.activitiesTop * .85 + mediaAllowance + titleAllowance);
     await page.locator("#chuong-trinh").screenshot({ path: `test-results/programs-${baseline.width}.png`, style: ".site-header, .mobile-cta, .skip-link { visibility: hidden !important; }" });
   }
   await writeFile("test-results/homepage-height-comparison.json", JSON.stringify(measured, null, 2));
 });
 
-test("375px and 1024px complete the homepage, Rio and electronics viewport matrix", async ({ page }, testInfo) => {
+test("375px and 1024px complete the homepage, Tư duy lập trình STEM and electronics viewport matrix", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Extra widths complement all three viewport projects");
   await page.emulateMedia({ reducedMotion: "reduce" });
   for (const width of [375, 1024]) {
     await page.setViewportSize({ width, height: 1000 });
-    for (const path of ["/", "/khoa-hoc/rio", "/khoa-hoc/dien-tu-co-ban"]) {
+    for (const path of ["/", "/khoa-hoc/tu-duy-lap-trinh-stem", "/khoa-hoc/dien-tu-robot-thong-minh"]) {
       await page.goto(path);
       await page.evaluate(() => document.fonts.ready);
       for (const toggle of await page.locator(".curriculum-group h3 button").all()) await toggle.click();
@@ -169,24 +176,24 @@ for (const blockedStorage of [false, true]) {
     });
     const payloads: Record<string, unknown>[] = [];
     await page.route("**/api/leads", route => { payloads.push(route.request().postDataJSON()); return route.fulfill({ json: { success: true } }); });
-    await page.goto("/khoa-hoc/rio?utm_source=facebook&utm_medium=paid&utm_campaign=rio");
-    await expect(page.getByLabel("Chương trình quan tâm")).toHaveValue("Rio");
+    await page.goto("/khoa-hoc/tu-duy-lap-trinh-stem?utm_source=facebook&utm_medium=paid&utm_campaign=rio");
+    await expect(page.getByLabel("Chương trình quan tâm")).toHaveValue("Tư duy lập trình STEM");
     await page.locator("#hero-actions").getByRole("link", { name: "Đăng ký học thử" }).click();
     await expect(page).toHaveURL(/utm_campaign=rio/);
-    await page.getByLabel("Chương trình quan tâm").selectOption("Điện tử cơ bản");
+    await page.getByLabel("Chương trình quan tâm").selectOption("Điện tử & Robot thông minh");
     await page.evaluate(() => { document.documentElement.dataset.navigationMarker = "same-document"; });
-    await page.locator(".related-programs").getByRole("link", { name: "Xem chương trình Starter Kit", exact: true }).click();
-    await expect(page).toHaveURL(/\/khoa-hoc\/starter-kit$/);
+    await page.locator(".related-programs").getByRole("link", { name: "Xem chương trình Kỹ sư Công nghệ STEM nhí", exact: true }).click();
+    await expect(page).toHaveURL(/\/khoa-hoc\/ky-su-cong-nghe-stem-nhi$/);
     await expect(page.locator("html")).toHaveAttribute("data-navigation-marker", "same-document");
-    await expect(page.getByLabel("Chương trình quan tâm")).toHaveValue("Starter Kit");
+    await expect(page.getByLabel("Chương trình quan tâm")).toHaveValue("Kỹ sư Công nghệ STEM nhí");
     await page.getByLabel("Tên phụ huynh").fill("TEST COURSE FLOW");
     await page.getByLabel("Số điện thoại").fill("0901234567");
     await page.getByLabel("Tuổi của bé").selectOption("9");
     await page.getByRole("button", { name: "Nhận tư vấn & lịch học thử" }).click();
     await expect(page.getByText(leadMessages.success, { exact: true })).toBeVisible();
     expect(payloads).toHaveLength(1);
-    expect(payloads[0]).toMatchObject({ program: "Starter Kit", sourcePage: "/khoa-hoc/starter-kit", utmSource: "facebook", utmMedium: "paid", utmCampaign: "rio", website: "" });
-    await expect(page.getByLabel("Chương trình quan tâm")).toHaveValue("Starter Kit");
+    expect(payloads[0]).toMatchObject({ program: "Kỹ sư Công nghệ STEM nhí", sourcePage: "/khoa-hoc/ky-su-cong-nghe-stem-nhi", utmSource: "facebook", utmMedium: "paid", utmCampaign: "rio", website: "" });
+    await expect(page.getByLabel("Chương trình quan tâm")).toHaveValue("Kỹ sư Công nghệ STEM nhí");
     await page.getByRole("link", { name: "Về trang chủ", exact: true }).click();
     await expect(page.getByLabel("Chương trình quan tâm")).toHaveValue(undecidedProgram);
   });
@@ -195,7 +202,7 @@ for (const blockedStorage of [false, true]) {
 test("honeypot is clipped, absent from accessibility and tab order, and still rejects spam", async ({ page, request }) => {
   let submits = 0;
   page.on("request", request => { if (request.url().endsWith("/api/leads")) submits++; });
-  for (const path of ["/", "/khoa-hoc/rio"]) {
+  for (const path of ["/", "/khoa-hoc/tu-duy-lap-trinh-stem"]) {
     await page.goto(path);
     const trap = page.locator("#website");
     await expect(page.locator(".lead-honeypot")).toHaveAttribute("aria-hidden", "true");
@@ -217,6 +224,6 @@ test("honeypot is clipped, absent from accessibility and tab order, and still re
     await expect(page.getByText("Dữ liệu không hợp lệ.", { exact: true })).toBeVisible();
   }
   expect(submits).toBe(0);
-  const response = await request.post("/api/leads", { data: { parentName: "TEST HONEYPOT", phone: "0901234567", childAge: 9, program: "Rio", sourcePage: "/khoa-hoc/rio", website: "bot" } });
+  const response = await request.post("/api/leads", { data: { parentName: "TEST HONEYPOT", phone: "0901234567", childAge: 9, program: "Tư duy lập trình STEM", sourcePage: "/khoa-hoc/tu-duy-lap-trinh-stem", website: "bot" } });
   expect(response.status()).toBe(400);
 });

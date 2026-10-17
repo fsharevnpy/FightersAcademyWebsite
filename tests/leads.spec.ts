@@ -13,7 +13,7 @@ async function fillForm(page: Page) {
 test("hero, renamed program, separate electronics prices and official Facebook remain consistent", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator(".hero-description")).toContainText("Cùng con khám phá robot, lập trình, điện tử và chế tạo qua những trải nghiệm STEM thực tế.");
-  await expect(page.locator(".program-card-main h3")).toHaveText(["Rio", "Starter Kit", "Tư duy logic & Lập trình", "Điện tử cơ bản"]);
+  await expect(page.locator(".program-card-main h3")).toHaveText(["Tư duy lập trình STEM", "Kỹ sư Công nghệ STEM nhí", "Lập trình sáng tạo STEM", "Điện tử & Robot thông minh"]);
   const electronics = page.locator(".program-card").last();
   await expect(electronics.locator(".program-age")).toHaveText("7–15 tuổi");
   await expect(electronics.locator(".program-tuition")).toContainText("Khóa học từ 3.500.000");
@@ -26,11 +26,11 @@ test("hero, renamed program, separate electronics prices and official Facebook r
     await expect(link).toHaveAttribute("target", "_blank");
     await expect(link).toHaveAttribute("rel", "noopener noreferrer");
   }
-  await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /Tư duy logic & Lập trình/);
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /Lập trình sáng tạo STEM/);
 });
 
 test("electronics has four keyboard-accessible collapsed groups with all 14 modules intact", async ({ page }) => {
-  await page.goto("/khoa-hoc/dien-tu-co-ban");
+  await page.goto("/khoa-hoc/dien-tu-robot-thong-minh");
   const curriculum = page.locator("#lo-trinh");
   const toggles = curriculum.locator(".curriculum-group h3 button");
   await expect(toggles).toHaveText([
@@ -104,7 +104,7 @@ test("loading prevents duplicate requests; confirmed success resets only after r
   });
   await page.goto("/?utm_source=facebook&utm_medium=paid_social&utm_campaign=oct");
   await fillForm(page);
-  await page.getByLabel("Chương trình quan tâm").selectOption("Starter Kit");
+  await page.getByLabel("Chương trình quan tâm").selectOption("Kỹ sư Công nghệ STEM nhí");
   await page.getByRole("button", { name: "Nhận tư vấn & lịch học thử" }).click();
   await expect(page.getByRole("button", { name: "Đang gửi..." })).toBeDisabled();
   await expect(page.getByLabel("Tên phụ huynh")).toHaveValue("Nguyễn Văn A");
@@ -115,7 +115,7 @@ test("loading prevents duplicate requests; confirmed success resets only after r
   await expect.poll(() => payloads.length).toBe(1);
   await expect(page.getByText(leadMessages.success, { exact: true })).toHaveCount(0);
   expect(payloads[0]).toEqual({
-    parentName: "Nguyễn Văn A", phone: "0901234567", childAge: 9, program: "Starter Kit",
+    parentName: "Nguyễn Văn A", phone: "0901234567", childAge: 9, program: "Kỹ sư Công nghệ STEM nhí",
     sourcePage: "/", utmSource: "facebook", utmMedium: "paid_social", utmCampaign: "oct", website: "",
   });
   release();

@@ -8,7 +8,7 @@ import { appendLeadRow, formatCreatedAt, LeadConfigurationError, readSheetsConfi
 import { createLeadHandler } from "../lib/server/lead-handler";
 
 const valid: LeadInput = {
-  parentName: "Nguyễn Văn A", phone: "0901234567", childAge: 9, program: "Starter Kit",
+  parentName: "Nguyễn Văn A", phone: "0901234567", childAge: 9, program: "Kỹ sư Công nghệ STEM nhí",
   sourcePage: "/", utmSource: "facebook", utmMedium: "paid_social", utmCampaign: "starterkit_oct",
 };
 const requestFor = (body: unknown) => new Request("http://localhost/api/leads", {
@@ -85,7 +85,7 @@ test("official Google client appends exactly A:K as RAW and propagates failures"
     expect(url.searchParams.get("valueInputOption")).toBe("RAW");
     expect(url.searchParams.get("insertDataOption")).toBe("INSERT_ROWS");
     expect(received[0].authorization).toBe("Bearer fake-test-token");
-    expect(received[0].body).toEqual({ values: [["2026-10-16 10:32", "=1+1", "0901234567", 9, "Starter Kit", "/", "facebook", "paid_social", "starterkit_oct", "New", ""]] });
+    expect(received[0].body).toEqual({ values: [["2026-10-16 10:32", "=1+1", "0901234567", 9, "Kỹ sư Công nghệ STEM nhí", "/", "facebook", "paid_social", "starterkit_oct", "New", ""]] });
     confirmedRows = 0;
     await expect(appendLeadRow(append, "fake-sheet", valid)).rejects.toThrow("not confirmed");
     responseCode = 503;

@@ -3,6 +3,7 @@ import { ArrowUpRight, Users, Layers3 } from "lucide-react";
 import { getProgramCourseCount, getProgramPath, getTuitionSummary, programs } from "@/content/programs";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { TrialCTA } from "@/components/ui/trial-cta";
+import { ProgramVisual } from "./program-visual";
 
 export function ProgramsSection() {
   return (
@@ -22,6 +23,7 @@ export function ProgramsSection() {
                 <span className="program-category">{program.category}</span>
                 <span className="program-number">/{program.number}</span>
               </div>
+              <ProgramVisual id={program.id} />
               <div className="program-card-main">
                 <div><h3>{program.name}</h3><div className="program-age"><Users size={15} aria-hidden="true" /><span>{program.audience}</span></div><p>{program.summary}</p></div>
               </div>
