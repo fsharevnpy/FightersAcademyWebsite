@@ -1,5 +1,13 @@
 import type { ProgramId } from "./programs";
 
+export type CoursePhoto = {
+  src: string;
+  original: string;
+  alt: string;
+  caption: string;
+  position: string;
+};
+
 const rioPracticePhoto = {
   src: "/images/activity-rio-practice.webp",
   original: "source/anhhoatdong/rio/1792209807890_3350274012594387389_3350274012594387389_6f612b7d42a19e0ffbc8efaeaa9fccbd.jpg",
@@ -27,7 +35,7 @@ export type CourseVideo = {
 };
 type CourseMedia = {
   representative: { src: string; alt: string; width: number; height: number; original: string };
-  practicePhoto?: typeof rioPracticePhoto;
+  photos: readonly CoursePhoto[];
   video: CourseVideo;
 };
 
@@ -40,7 +48,23 @@ export const courseMedia: Partial<Record<ProgramId, CourseMedia>> = {
       alt: "Robot Rio màu xanh với các nút lệnh trên sa bàn nhiều màu",
       width: 600, height: 600,
     },
-    practicePhoto: rioPracticePhoto,
+    photos: [
+      rioPracticePhoto,
+      {
+        src: "/images/activity-rio-guidance.webp",
+        original: "source/anhhoatdong/rio/1792209808112_3350274012594387389_3350274012594387389_c5ab5c03373e87b84490ac15883b2646.jpg",
+        alt: "Người hướng dẫn và học viên quan sát robot Rio trên sa bàn",
+        caption: "Khám phá robot cùng người hướng dẫn",
+        position: "50% 60%",
+      },
+      {
+        src: "/images/activity-rio-screen.webp",
+        original: "source/anhhoatdong/rio/1792209807545_3350274012594387389_3350274012594387389_304b9e2641fc25c2f2411291f803526f.jpg",
+        alt: "Nhóm học viên cùng người hướng dẫn quan sát hình sa bàn trên màn hình máy tính",
+        caption: "Cùng quan sát và tìm hiểu",
+        position: "50% 60%",
+      },
+    ],
     video: {
       src: "/videos/rio-practice.mp4",
       original: "source/anhhoatdong/rio/1791689462617_281260927700765988_g3873433740052077826.mp4",
@@ -52,6 +76,30 @@ export const courseMedia: Partial<Record<ProgramId, CourseMedia>> = {
   },
   "dien-tu-co-ban": {
     representative: electronicsPhoto,
+    photos: [
+      electronicsPhoto,
+      {
+        src: "/images/activity-electronics-circuit.webp",
+        original: "source/anhhoatdong/dientucoban/1792256970900_281260927700765988_802952788732364519_29255759327b5a6c0f7c2b9aeef4a408.jpg",
+        alt: "Mạch điện nối dây với cảm biến và động cơ trên mô hình khối ghép nhiều màu",
+        caption: "Kết nối mạch điện và mô hình",
+        position: "45% 50%",
+      },
+      {
+        src: "/images/activity-electronics-programming.webp",
+        original: "source/anhhoatdong/dientucoban/1792256970789_281260927700765988_802952788732364519_fc7d4fc7de969a4f8a3ae83ff4db7e87.jpg",
+        alt: "Màn hình hiển thị chương trình khối lệnh cho cảm biến và động cơ",
+        caption: "Thực hành với khối lệnh",
+        position: "35% 50%",
+      },
+      {
+        src: "/images/activity-electronics-whiteboard.webp",
+        original: "source/anhhoatdong/dientucoban/1785038271329_4580753154693219409_g3873433740052077826_3eef06fe71337c8e9ae2dce2cfbc8ad0.jpg",
+        alt: "Người hướng dẫn vẽ sơ đồ mạch điện trên bảng trong phòng học",
+        caption: "Tìm hiểu sơ đồ mạch điện",
+        position: "50% 45%",
+      },
+    ],
     video: {
       src: "/videos/electronics-practice.mp4",
       original: "source/anhhoatdong/dientucoban/1792256970700_281260927700765988_802952788732364519.mp4",

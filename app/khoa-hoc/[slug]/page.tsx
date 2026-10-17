@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArrowDown, ArrowUpRight, Check, Users } from "lucide-react";
 import { siteUrl, trialContact } from "@/content/contact";
@@ -10,6 +9,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { MobileCTA } from "@/components/layout/mobile-cta";
 import { ProgramVisual } from "@/components/home/program-visual";
 import { PracticeVideo } from "@/components/home/practice-video";
+import { CourseGallery } from "@/components/home/course-gallery";
 import { courseMedia, getCourseRepresentative } from "@/content/media";
 import { ProgramCurriculum } from "@/components/home/program-curriculum";
 import { FAQSection } from "@/components/home/faq-section";
@@ -75,19 +75,17 @@ export default async function CoursePage({ params }: Props) {
           </div>
         </div>
       </section>
-      <section className="section"><div className="container course-intro-grid">
+      <section className="section"><div className="container"><div className="course-intro-grid">
         <div><SectionHeading eyebrow="ĐIỂM BẮT ĐẦU" title="Chương trình phù hợp với ai?" description={program.fit} /><p className="course-age-note">Độ tuổi: {program.audience}. Trung tâm tư vấn cấp độ theo năng lực hiện tại của con.</p>
           {media && <div className="course-practice"><h3>Thực hành tại STEM Fighters</h3>
-            {media.practicePhoto && <figure className="course-practice-photo">
-              <div><Image src={media.practicePhoto.src} alt={media.practicePhoto.alt} fill sizes="(min-width: 768px) 260px, 220px" loading="lazy" style={{ objectPosition: media.practicePhoto.position }} /></div>
-              <figcaption>{media.practicePhoto.caption}</figcaption>
-            </figure>}
             <PracticeVideo video={media.video} />
           </div>}
         </div>
         <div><h2>Trẻ sẽ học và thực hành gì?</h2><ul className="course-skills">{program.skills.map(skill => <li key={skill}><Check size={20} aria-hidden="true" /><span>{skill}</span></li>)}</ul>
           <article className="course-example"><p className="eyebrow">VÍ DỤ TỪ GIÁO TRÌNH</p><h3>{program.example.title}</h3><p>{program.example.description}</p><p className="course-note">Đây là ví dụ thực hành, không phải hồ sơ dự án học viên đã hoàn thành.</p></article>
         </div>
+      </div>
+        {media?.photos.length ? <CourseGallery key={program.id} name={program.name} photos={media.photos} /> : null}
       </div></section>
       <section id="lo-trinh" className="section section-tinted"><div className="container course-curriculum">
         <SectionHeading eyebrow="LỘ TRÌNH HỌC" title="Các khóa học & học phí" description={getProgramStructure(program) ?? undefined} />

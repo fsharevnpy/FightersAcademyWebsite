@@ -22,7 +22,17 @@ test("representative images and short clips are optimized, with original media r
     await access(resolve(...media.video.original.split("/")));
     expect((await stat(resolve("public", ...media.video.src.slice(1).split("/")))).size).toBeLessThan(1.5 * 1024 * 1024);
     expect((await stat(resolve("public", ...media.video.poster.slice(1).split("/")))).size).toBeLessThan(150 * 1024);
-    if (media.practicePhoto) await access(resolve(...media.practicePhoto.original.split("/")));
+    expect(media.photos.length).toBe(program.id === "rio" ? 3 : 4);
+    expect(new Set(media.photos.map(photo => photo.src)).size).toBe(media.photos.length);
+    for (const photo of media.photos) {
+      await access(resolve(...photo.original.split("/")));
+      const photoPath = resolve("public", ...photo.src.slice(1).split("/"));
+      const metadata = await sharp(photoPath).metadata();
+      expect(metadata.format).toBe("webp");
+      expect(Math.max(metadata.width!, metadata.height!)).toBeLessThanOrEqual(1280);
+      expect(metadata.exif).toBeUndefined();
+      expect((await stat(photoPath)).size).toBeLessThan(200 * 1024);
+    }
   }
 });
 
@@ -52,6 +62,68 @@ test("legacy names normalize to current names and all previous URLs redirect dir
 });
 
 for (const program of programs) {
+  test(`${program.id}: only confirmed course photos appear, with accessible full-image viewing`, async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", error => errors.push(error.message));
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto(getProgramPath(program));
+    const gallery = page.locator(".course-gallery");
+    const media = courseMedia[program.id];
+    if (!media) {
+      await expect(gallery).toHaveCount(0);
+      return;
+    }
+    await expect(gallery).toHaveCount(1);
+    await expect(gallery.locator("figure")).toHaveCount(media.photos.length);
+    const triggers = gallery.getByRole("button", { name: /^Phóng to ảnh:/ });
+    await expect(triggers).toHaveCount(media.photos.length);
+    for (const [index, photo] of media.photos.entries()) {
+      const image = triggers.nth(index).locator("img");
+      await expect(image).toHaveAttribute("alt", photo.alt);
+      await expect(image).toHaveAttribute("loading", "lazy");
+      await expect(image).toHaveAttribute("src", new RegExp(encodeURIComponent(photo.src)));
+    }
+    await expect(page.locator(".course-practice-photo")).toHaveCount(0);
+    await triggers.first().scrollIntoViewIfNeeded();
+    const previousOverflow = await page.locator("body").evaluate(body => body.style.overflow);
+    await triggers.first().focus();
+    await expect(triggers.first()).toHaveCSS("outline-style", "solid");
+    await page.keyboard.press("Enter");
+    const viewer = page.getByRole("dialog", { name: `Hình ảnh hoạt động: ${program.name}`, exact: true });
+    await expect(viewer).toBeVisible();
+    const close = viewer.getByRole("button", { name: "Đóng ảnh", exact: true });
+    await expect(close).toBeFocused();
+    await expect(page.locator("body")).toHaveCSS("overflow", "hidden");
+    await expect(page.locator(".mobile-cta")).toBeHidden();
+    const fullImage = viewer.locator("img");
+    await expect(fullImage).toHaveCSS("object-fit", "contain");
+    await expect(fullImage).toHaveAttribute("alt", media.photos[0].alt);
+    await expect.poll(() => fullImage.evaluate(image => image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0)).toBe(true);
+    await page.keyboard.press("Shift+Tab");
+    await expect(viewer.getByRole("button", { name: "Ảnh tiếp theo", exact: true })).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(close).toBeFocused();
+    await page.keyboard.press("ArrowLeft");
+    await expect(fullImage).toHaveAttribute("alt", media.photos.at(-1)!.alt);
+    await viewer.getByRole("button", { name: "Ảnh tiếp theo", exact: true }).click();
+    await expect(fullImage).toHaveAttribute("alt", media.photos[0].alt);
+    await page.keyboard.press("ArrowRight");
+    await expect(fullImage).toHaveAttribute("alt", media.photos[1].alt);
+    await expect(viewer.locator("figcaption")).toContainText(`2/${media.photos.length}`);
+    expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.keyboard.press("Escape");
+    await expect(viewer).not.toBeVisible();
+    await expect(triggers.first()).toBeFocused();
+    expect(await page.locator("body").evaluate(body => body.style.overflow)).toBe(previousOverflow);
+    await triggers.last().click();
+    await expect(fullImage).toHaveAttribute("alt", media.photos.at(-1)!.alt);
+    await close.click();
+    await expect(triggers.last()).toBeFocused();
+    await expect(page.locator("body")).not.toHaveAttribute("data-dialog-open", "true");
+    expect(errors).toEqual([]);
+  });
+
   test(`${program.id}: representative matches the course and playback only starts on demand`, async ({ page }) => {
     const requests: string[] = [];
     const errors: string[] = [];
@@ -136,6 +208,7 @@ test("four equally sized representatives and course media fit phone, tablet and 
       }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       if ([390, 768, 1440].includes(width)) {
+        await page.locator(".course-gallery").screenshot({ path: `test-results/gallery-${program.id}-${width}.png`, style: ".site-header, .mobile-cta, .skip-link { visibility: hidden !important; }" });
         await page.locator(".course-hero").screenshot({ path: `test-results/media-${program.id}-${width}-hero.png`, style: ".site-header, .mobile-cta, .skip-link { visibility: hidden !important; }" });
         await page.locator(".course-intro-grid").screenshot({ path: `test-results/media-${program.id}-${width}-practice.png`, style: ".site-header, .mobile-cta, .skip-link { visibility: hidden !important; }" });
       }

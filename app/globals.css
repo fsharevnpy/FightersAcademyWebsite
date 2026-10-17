@@ -184,9 +184,6 @@
   .course-practice h3 { font-size: 20px; margin-bottom: 16px; }
   .course-practice figure { margin: 0; }
   .course-practice figcaption { font-size: 13px; color: var(--color-muted); margin-top: 8px; }
-  .course-practice .course-practice-photo { max-width: 260px; margin-bottom: 20px; }
-  .course-practice-photo > div { position: relative; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 12px; }
-  .course-practice-photo img { object-fit: cover; }
   .practice-video-frame { position: relative; aspect-ratio: 97 / 45; border-radius: 12px; background: var(--color-surface); }
   .practice-video-frame video { display: block; width: 100%; height: 100%; border-radius: inherit; }
   .practice-video-start { position: absolute; inset: 0; width: 100%; border: 0; padding: 0; background: var(--color-surface); border-radius: inherit; overflow: hidden; }
@@ -228,6 +225,22 @@
   .activity-grid img { object-fit: cover; transition: transform .4s; }
   .activity-grid figure:hover img { transform: scale(1.025); }
   .activity-grid figcaption { padding-top: 10px; font-size: 14px; font-weight: 500; color: #364c68; }
+  .course-gallery { margin-top: 48px; padding-top: 40px; border-top: 1px solid var(--color-line); }
+  .course-gallery-grid--four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .course-gallery-grid .activity-photo { display: block; width: 100%; border: 0; padding: 0; }
+  .course-gallery-zoom { position: absolute; bottom: 10px; right: 10px; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; color: white; background: var(--color-brand); }
+  .course-photo-dialog { margin: auto; padding: 0; width: min(1040px, calc(100vw - 32px)); max-width: none; max-height: calc(100dvh - 32px); border: 1px solid var(--color-line); border-radius: 16px; background: white; color: var(--color-ink); overflow: auto; }
+  .course-photo-dialog::backdrop { background: #07172cbd; }
+  .course-photo-viewer { position: relative; padding: 60px 20px 20px; }
+  .course-photo-viewer figure { margin: 0; }
+  .course-photo-full { position: relative; height: min(65dvh, 680px); }
+  .course-photo-full img { object-fit: contain; }
+  .course-photo-viewer figcaption { margin-top: 12px; text-align: center; font-size: 14px; }
+  .course-photo-viewer figcaption span { white-space: nowrap; color: var(--color-muted); }
+  .course-photo-viewer button { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--color-line); border-radius: 10px; background: white; color: var(--color-brand); }
+  .course-photo-viewer button:hover { background: var(--color-surface-brand); }
+  .course-photo-close { position: absolute; top: 8px; right: 12px; }
+  .course-photo-controls { display: flex; justify-content: center; gap: 16px; margin-top: 12px; }
   .progress-section { background: #f4f8fc; border-block: 1px solid #eaf0f5; }
   .progress-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 90px; align-items: center; }
   .progress-grid > div { min-width: 0; }
@@ -339,6 +352,7 @@
   .progress-grid { gap: 50px; }
 }
 @media (max-width: 1023px) {
+  .course-gallery-grid--four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .header-inner { height: 76px; }
   .desktop-nav, .header-cta { display: none; }
   .menu-toggle { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--color-line); background: white; color: var(--color-navy); border-radius: 10px; }
@@ -428,7 +442,6 @@
   .course-hero-grid, .course-intro-grid, .related-programs { grid-template-columns: 1fr; }
   .course-hero h1 { font-size: 36px; }
   .course-art { max-width: 360px; width: 100%; margin-inline: auto; padding: 8px; }
-  .course-practice .course-practice-photo { max-width: 220px; }
   .course-description { font-size: 16px; }
   .course-tuition strong { font-size: 20px; }
   .process-intro { gap: 28px; }
@@ -470,7 +483,7 @@
   .site-footer { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
   .mobile-cta { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 10px; position: fixed; z-index: 25; bottom: 0; left: 0; right: 0; background: #fffffffa; border-top: 1px solid var(--color-line); padding: 10px 20px calc(10px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 20px #0b1f4b07; }
   .mobile-cta .button { width: 100%; min-width: 0; padding-inline: 10px; font-size: 14px; gap: 6px; }
-  body[data-menu-open="true"] .mobile-cta, body:has(.lead-form:focus-within) .mobile-cta { display: none; }
+  body[data-menu-open="true"] .mobile-cta, body[data-dialog-open="true"] .mobile-cta, body:has(.lead-form:focus-within) .mobile-cta { display: none; }
 }
 @media (max-width: 374px) {
   .program-card-bottom { grid-template-columns: 1fr; }
