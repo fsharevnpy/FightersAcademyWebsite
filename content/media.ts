@@ -32,14 +32,16 @@ export type CourseVideo = {
   caption: string;
   description: string;
   duration: number;
+  width: number;
+  height: number;
 };
 type CourseMedia = {
   representative: { src: string; alt: string; width: number; height: number; original: string };
   photos: readonly CoursePhoto[];
-  video: CourseVideo;
+  videos: readonly CourseVideo[];
 };
 
-// Only these two courses have owner-confirmed photographs; other courses retain their illustrations.
+// Only owner-confirmed media is assigned to a course.
 export const courseMedia: Partial<Record<ProgramId, CourseMedia>> = {
   rio: {
     representative: {
@@ -65,14 +67,59 @@ export const courseMedia: Partial<Record<ProgramId, CourseMedia>> = {
         position: "50% 60%",
       },
     ],
-    video: {
+    videos: [{
       src: "/videos/rio-practice.mp4",
       original: "source/anhhoatdong/rio/1791689462617_281260927700765988_g3873433740052077826.mp4",
       poster: "/images/rio-practice-poster.webp",
       caption: "Thực hành điều khiển robot trên sa bàn",
       description: "Robot Rio di chuyển trên sa bàn giữa các vật đặt trên đường đi; người học thao tác với robot. Video minh họa không có âm thanh.",
       duration: 20,
+      width: 960, height: 446,
+    }],
+  },
+  "starter-kit": {
+    representative: {
+      src: "/images/course-starter-kit-product.webp",
+      original: "source/anhhoatdong/kysucongnghestemnhi/sanphamdaidien.png",
+      alt: "Mô hình khối ghép với cảm biến, bộ điều khiển và đèn LED trên đế màu vàng",
+      width: 600, height: 600,
     },
+    photos: [
+      {
+        src: "/images/activity-starter-kit-programming.webp",
+        original: "source/anhhoatdong/kysucongnghestemnhi/6a2c04b6ba963ac86387.jpg",
+        alt: "Học viên và người hướng dẫn cùng quan sát chương trình khối lệnh trên màn hình, với bộ điều khiển trên bàn",
+        caption: "Thực hành lập trình cùng người hướng dẫn",
+        position: "60% 50%",
+      },
+      {
+        src: "/images/activity-starter-kit-guidance.webp",
+        original: "source/anhhoatdong/kysucongnghestemnhi/b4710aefb4cf34916dde.jpg",
+        alt: "Học viên và người hướng dẫn trao đổi trên giấy bên cạnh bộ điều khiển có đèn LED",
+        caption: "Cùng trao đổi và tìm hiểu",
+        position: "50% 50%",
+      },
+    ],
+    videos: [
+      {
+        src: "/videos/starter-kit-model.mp4",
+        original: "source/anhhoatdong/kysucongnghestemnhi/2HGb6FIBiYfWj4tSZn1xweTDjgA0zB3Fv1CC.mp4",
+        poster: "/images/starter-kit-model-poster.webp",
+        caption: "Thử nghiệm cùng mô hình và đèn LED",
+        description: "Người thực hành đưa tay cạnh mô hình khối ghép có cảm biến và bộ điều khiển với đèn LED sáng. Video minh họa không có âm thanh.",
+        duration: 17,
+        width: 960, height: 540,
+      },
+      {
+        src: "/videos/starter-kit-card.mp4",
+        original: "source/anhhoatdong/kysucongnghestemnhi/2aOboR7FmKpoHfHcEZRbkFDqTCdfywmrQkuE2pSS.mp4",
+        poster: "/images/starter-kit-card-poster.webp",
+        caption: "Thao tác với thẻ và mạch điều khiển",
+        description: "Một tấm thẻ trắng được đưa gần mạch nối dây với màn hình hiển thị trên bàn thực hành. Video minh họa không có âm thanh.",
+        duration: 8,
+        width: 960, height: 446,
+      },
+    ],
   },
   "dien-tu-co-ban": {
     representative: electronicsPhoto,
@@ -100,24 +147,24 @@ export const courseMedia: Partial<Record<ProgramId, CourseMedia>> = {
         position: "50% 45%",
       },
     ],
-    video: {
+    videos: [{
       src: "/videos/electronics-practice.mp4",
       original: "source/anhhoatdong/dientucoban/1792256970700_281260927700765988_802952788732364519.mp4",
       poster: "/images/electronics-practice-poster.webp",
       caption: "Thử nghiệm với mạch điện và mô hình",
       description: "Người học đưa một khối lắp ghép tới mô hình có linh kiện và dây nối trên bàn, quan sát mô hình rồi tiếp tục thao tác. Video minh họa không có âm thanh.",
       duration: 6,
-    },
+      width: 960, height: 446,
+    }],
   },
 };
 
 export const courseIllustrations = {
-  "starter-kit": { src: "/images/course-starter-kit.png", width: 1200, height: 900, alt: "Minh họa bộ điều khiển và kết nối linh kiện" },
   "lap-trinh": { src: "/images/course-logic-programming.png", width: 1200, height: 900, alt: "Minh họa cửa sổ lập trình và ký hiệu lệnh" },
 };
 
 export function getCourseRepresentative(id: ProgramId) {
-  if (id === "starter-kit" || id === "lap-trinh") return courseIllustrations[id];
+  if (id === "lap-trinh") return courseIllustrations[id];
   const photo = courseMedia[id]?.representative;
   if (!photo) throw new Error(`Missing course representative: ${id}`);
   return photo;

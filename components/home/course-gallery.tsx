@@ -55,14 +55,14 @@ export function CourseGallery({ name, photos }: Props) {
       <h2 id={`${id}-title`}>Hình ảnh hoạt động</h2>
       <p className="section-description">Một vài hình ảnh học tập và thực hành trong chương trình {name}. Chọn ảnh để xem đầy đủ.</p>
     </div>
-    <div className={`activity-grid course-gallery-grid${photos.length === 4 ? " course-gallery-grid--four" : ""}`}>
+    <div className={`activity-grid course-gallery-grid${photos.length === 4 ? " course-gallery-grid--four" : photos.length === 2 ? " course-gallery-grid--two" : ""}`}>
       {photos.map((item, index) => <figure key={item.src}>
         <button type="button" className="activity-photo" aria-label={`Phóng to ảnh: ${item.caption}`} aria-haspopup="dialog" aria-controls={`${id}-viewer`} onClick={event => {
           trigger.current = event.currentTarget;
           setSelected(index);
           dialog.current?.showModal();
         }}>
-          <Image src={item.src} alt={item.alt} fill sizes={photos.length === 4 ? "(min-width: 1280px) 282px, (min-width: 1024px) 25vw, 50vw" : "(min-width: 1280px) 384px, (min-width: 768px) 33vw, 50vw"} loading="lazy" style={{ objectPosition: item.position }} />
+          <Image src={item.src} alt={item.alt} fill sizes={photos.length === 2 ? "(min-width: 1280px) 588px, 50vw" : photos.length === 4 ? "(min-width: 1280px) 282px, (min-width: 1024px) 25vw, 50vw" : "(min-width: 1280px) 384px, (min-width: 768px) 33vw, 50vw"} loading="lazy" style={{ objectPosition: item.position }} />
           <span className="course-gallery-zoom"><Expand size={16} aria-hidden="true" /></span>
         </button>
         <figcaption>{item.caption}</figcaption>

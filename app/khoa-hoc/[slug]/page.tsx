@@ -78,7 +78,7 @@ export default async function CoursePage({ params }: Props) {
       <section className="section"><div className="container"><div className="course-intro-grid">
         <div><SectionHeading eyebrow="ĐIỂM BẮT ĐẦU" title="Chương trình phù hợp với ai?" description={program.fit} /><p className="course-age-note">Độ tuổi: {program.audience}. Trung tâm tư vấn cấp độ theo năng lực hiện tại của con.</p>
           {media && <div className="course-practice"><h3>Thực hành tại STEM Fighters</h3>
-            <PracticeVideo video={media.video} />
+            {media.videos.map(video => <PracticeVideo key={video.src} video={video} />)}
           </div>}
         </div>
         <div><h2>Trẻ sẽ học và thực hành gì?</h2><ul className="course-skills">{program.skills.map(skill => <li key={skill}><Check size={20} aria-hidden="true" /><span>{skill}</span></li>)}</ul>

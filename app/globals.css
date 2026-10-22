@@ -124,6 +124,7 @@
   .program-visual { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 12px; background: var(--color-surface); display: grid; place-items: center; }
   .program-visual img { object-fit: cover; }
   .program-visual--contain img { object-fit: contain; }
+  .program-visual--product img { object-fit: contain; padding: 8px; }
   .program-card .program-visual--contain img, .related-programs .program-visual--contain img { object-fit: cover; object-position: 50% 45%; }
   .program-visual .program-art { width: 85%; height: 85%; }
   .program-card > .program-visual { height: 140px; width: 100%; aspect-ratio: auto; margin-top: 16px; flex-shrink: 0; }
@@ -183,6 +184,7 @@
   .course-practice { margin-top: 28px; }
   .course-practice h3 { font-size: 20px; margin-bottom: 16px; }
   .course-practice figure { margin: 0; }
+  .course-practice .practice-video + .practice-video { margin-top: 24px; }
   .course-practice figcaption { font-size: 13px; color: var(--color-muted); margin-top: 8px; }
   .practice-video-frame { position: relative; aspect-ratio: 97 / 45; border-radius: 12px; background: var(--color-surface); }
   .practice-video-frame video { display: block; width: 100%; height: 100%; border-radius: inherit; }
@@ -227,6 +229,7 @@
   .activity-grid figcaption { padding-top: 10px; font-size: 14px; font-weight: 500; color: #364c68; }
   .course-gallery { margin-top: 48px; padding-top: 40px; border-top: 1px solid var(--color-line); }
   .course-gallery-grid--four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .course-gallery-grid--two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .course-gallery-grid .activity-photo { display: block; width: 100%; border: 0; padding: 0; }
   .course-gallery-zoom { position: absolute; bottom: 10px; right: 10px; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; color: white; background: var(--color-brand); }
   .course-photo-dialog { margin: auto; padding: 0; width: min(1040px, calc(100vw - 32px)); max-width: none; max-height: calc(100dvh - 32px); border: 1px solid var(--color-line); border-radius: 16px; background: white; color: var(--color-ink); overflow: auto; }

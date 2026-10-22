@@ -23,7 +23,7 @@ export function PracticeVideo({ video }: { video: CourseVideo }) {
     try { await element.play(); } catch (cause) { reportError(cause); }
   }
   return <figure className="practice-video">
-    <div className="practice-video-frame">
+    <div className="practice-video-frame" style={{ aspectRatio: `${video.width} / ${video.height}` }}>
       <video ref={player} controls={started} playsInline muted preload="none" tabIndex={started ? 0 : -1}
         aria-hidden={!started} aria-label={video.caption} aria-describedby={`${id}-description`}
         onError={() => reportError(player.current?.error)} />

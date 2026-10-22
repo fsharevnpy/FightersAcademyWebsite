@@ -19,10 +19,17 @@ test("representative images and short clips are optimized, with original media r
     const media = courseMedia[program.id];
     if (!media) continue;
     await access(resolve(...media.representative.original.split("/")));
-    await access(resolve(...media.video.original.split("/")));
-    expect((await stat(resolve("public", ...media.video.src.slice(1).split("/")))).size).toBeLessThan(1.5 * 1024 * 1024);
-    expect((await stat(resolve("public", ...media.video.poster.slice(1).split("/")))).size).toBeLessThan(150 * 1024);
-    expect(media.photos.length).toBe(program.id === "rio" ? 3 : 4);
+    expect(media.videos.length).toBe(program.id === "starter-kit" ? 2 : 1);
+    for (const video of media.videos) {
+      await access(resolve(...video.original.split("/")));
+      expect((await stat(resolve("public", ...video.src.slice(1).split("/")))).size).toBeLessThan(1.5 * 1024 * 1024);
+      const posterPath = resolve("public", ...video.poster.slice(1).split("/"));
+      expect((await stat(posterPath)).size).toBeLessThan(150 * 1024);
+      const poster = await sharp(posterPath).metadata();
+      expect(poster.width).toBe(video.width);
+      expect(poster.height).toBe(video.height);
+    }
+    expect(media.photos.length).toBe(program.id === "rio" ? 3 : program.id === "starter-kit" ? 2 : 4);
     expect(new Set(media.photos.map(photo => photo.src)).size).toBe(media.photos.length);
     for (const photo of media.photos) {
       await access(resolve(...photo.original.split("/")));
@@ -142,32 +149,40 @@ for (const program of programs) {
       return;
     }
     await expect(page.locator(".course-art img")).toHaveAttribute("alt", media.representative.alt);
-    const button = page.getByRole("button", { name: `Xem video: ${media.video.caption}`, exact: true });
-    await button.scrollIntoViewIfNeeded();
-    await expect(button).toBeVisible();
+    await expect(page.locator("video")).toHaveCount(media.videos.length);
     await expect(page.locator(".course-example video")).toHaveCount(0);
-    const video = page.locator("video");
-    await expect(video).toHaveAttribute("preload", "none");
-    await expect(video).not.toHaveAttribute("src", /.+/);
     expect(requests).toEqual([]);
-    await button.focus();
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Shift+Tab");
-    await expect(button).toBeFocused();
-    await expect(button).toHaveCSS("outline-style", "solid");
-    await page.keyboard.press("Enter");
-    await expect(video).toHaveAttribute("src", media.video.src);
-    await expect(video).toBeFocused();
-    await expect.poll(() => video.evaluate(element => element instanceof HTMLVideoElement && element.currentTime > 0 && !element.paused)).toBe(true);
-    const info = await video.evaluate(element => {
-      if (!(element instanceof HTMLVideoElement)) throw new Error("Expected video");
-      return { duration: element.duration, width: element.videoWidth, muted: element.muted, controls: element.controls, autoplay: element.autoplay, loop: element.loop, playsInline: element.playsInline };
-    });
-    expect(info.duration).toBeCloseTo(media.video.duration, 0);
-    expect(info.width).toBeLessThanOrEqual(960);
-    expect(info).toMatchObject({ muted: true, controls: true, autoplay: false, loop: false, playsInline: true });
-    await video.evaluate(element => { if (element instanceof HTMLVideoElement) element.pause(); });
-    await expect.poll(() => video.evaluate(element => element instanceof HTMLVideoElement && element.paused)).toBe(true);
+    for (const [index, clip] of media.videos.entries()) {
+      const figure = page.locator(".practice-video").nth(index);
+      const button = figure.getByRole("button", { name: `Xem video: ${clip.caption}`, exact: true });
+      await button.scrollIntoViewIfNeeded();
+      await expect(button).toBeVisible();
+      const video = figure.locator("video");
+      await expect(video).toHaveAttribute("preload", "none");
+      await expect(video).not.toHaveAttribute("src", /.+/);
+      expect(requests.some(url => url.endsWith(clip.src))).toBe(false);
+      const frame = await figure.locator(".practice-video-frame").boundingBox();
+      expect(frame!.width / frame!.height).toBeCloseTo(clip.width / clip.height, 1);
+      await button.focus();
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Shift+Tab");
+      await expect(button).toBeFocused();
+      await expect(button).toHaveCSS("outline-style", "solid");
+      await page.keyboard.press("Enter");
+      await expect(video).toHaveAttribute("src", clip.src);
+      await expect(video).toBeFocused();
+      await expect.poll(() => video.evaluate(element => element instanceof HTMLVideoElement && element.currentTime > 0 && !element.paused)).toBe(true);
+      const info = await video.evaluate(element => {
+        if (!(element instanceof HTMLVideoElement)) throw new Error("Expected video");
+        return { duration: element.duration, width: element.videoWidth, height: element.videoHeight, muted: element.muted, controls: element.controls, autoplay: element.autoplay, loop: element.loop, playsInline: element.playsInline };
+      });
+      expect(info.duration).toBeCloseTo(clip.duration, 0);
+      expect(info.width).toBe(clip.width);
+      expect(info.height).toBe(clip.height);
+      expect(info).toMatchObject({ muted: true, controls: true, autoplay: false, loop: false, playsInline: true });
+      await video.evaluate(element => { if (element instanceof HTMLVideoElement) { element.pause(); element.currentTime = element.duration / 2; } });
+      await expect.poll(() => video.evaluate(element => element instanceof HTMLVideoElement && element.paused && Math.abs(element.currentTime - element.duration / 2) < .5)).toBe(true);
+    }
     expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
     expect(errors).toEqual([]);
   });
@@ -178,7 +193,30 @@ test("video failure is visible and offers a real file link", async ({ page }) =>
   await page.goto(getProgramPath(programs[0]));
   await page.locator(".practice-video-start").click();
   await expect(page.locator(".practice-video").getByRole("alert")).toContainText("Không phát được video.");
-  await expect(page.getByRole("link", { name: "Mở video trực tiếp", exact: true })).toHaveAttribute("href", courseMedia.rio!.video.src);
+  await expect(page.getByRole("link", { name: "Mở video trực tiếp", exact: true })).toHaveAttribute("href", courseMedia.rio!.videos[0].src);
+});
+
+test("starter-kit uses its supplied product image on every representative surface and both videos support ranges", async ({ page, request }) => {
+  const media = courseMedia["starter-kit"]!;
+  expect(media.representative.original).toBe("source/anhhoatdong/kysucongnghestemnhi/sanphamdaidien.png");
+  await page.goto("/");
+  const homeImage = page.locator(".program-card").getByRole("img", { name: media.representative.alt, exact: true });
+  await expect(homeImage).toHaveAttribute("src", new RegExp(encodeURIComponent(media.representative.src)));
+  await expect(homeImage).toHaveCSS("object-fit", "contain");
+  for (const program of programs) {
+    await page.goto(getProgramPath(program));
+    const area = page.locator(program.id === "starter-kit" ? ".course-art" : ".related-programs");
+    const image = area.getByRole("img", { name: media.representative.alt, exact: true });
+    await expect(image).toHaveAttribute("src", new RegExp(encodeURIComponent(media.representative.src)));
+    await expect(image).toHaveCSS("object-fit", "contain");
+  }
+  for (const clip of media.videos) {
+    const response = await request.get(clip.src, { headers: { Range: "bytes=0-1023" } });
+    expect(response.status()).toBe(206);
+    expect(response.headers()["content-type"]).toContain("video/mp4");
+    expect(response.headers()["content-range"]).toMatch(/^bytes 0-1023\/\d+$/);
+    expect((await response.body()).length).toBe(1024);
+  }
 });
 
 test("four equally sized representatives and course media fit phone, tablet and desktop", async ({ page }, testInfo) => {
@@ -195,8 +233,8 @@ test("four equally sized representatives and course media fit phone, tablet and 
     expect(new Set(boxes.map(box => box.height)).size).toBe(1);
     expect(new Set(boxes.map(box => box.width)).size).toBe(1);
     expect(boxes[0].height).toBe(140);
-    await expect(page.locator(".program-card img")).toHaveCount(2);
-    await expect(page.locator(".program-card svg.program-art")).toHaveCount(2);
+    await expect(page.locator(".program-card img")).toHaveCount(3);
+    await expect(page.locator(".program-card svg.program-art")).toHaveCount(1);
     await expect(page.locator("#hoat-dong figure")).toHaveCount(6);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     if ([390, 768, 1440].includes(width)) await page.locator("#chuong-trinh").screenshot({ path: `test-results/course-cards-${width}.png`, style: ".site-header, .mobile-cta, .skip-link { visibility: hidden !important; }" });
